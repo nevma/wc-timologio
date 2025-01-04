@@ -19,14 +19,31 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Checkout {
 
+	// Constants
+	const FIELD_TYPE_ORDER = 'type_of_order';
+	const TYPE_TIMOLOGIO   = 'timologio';
+	const TYPE_APODEIXI    = 'apodeixi';
+
+	private $required_timologio_fields = array(
+		'billing_vat_id'      => 'ΑΦΜ',
+		'billing_activity'    => 'Δραστηριότητα',
+		'billing_company_nvm' => 'Επωνυμία εταιρίας',
+	);
+
+
 	public function __construct() {
 
+		$this->register_hooks();
+	}
+
+	private function register_hooks() {
 		add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
 		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'show_timologio_fields' ), 10, 1 );
-		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'timologio_checkout_field_update_order_meta' ) );
+		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_timologio_data' ) );
 
 		add_action( 'woocommerce_init', array( $this, 'block_add_timologio_fields' ) );
 	}
+
 
 	public function style_checkout() {
 		?>
@@ -174,42 +191,38 @@ class Checkout {
 		return $fields;
 	}
 
-	/**
-	 *
-	 * This file contains the 'timologio_process' function, which is hooked to the 'woocommerce_checkout_process' action.
-	 * The function is responsible for validating and processing orders with the 'timologio' type.
-	 * It checks if the required fields for 'timologio' orders are filled in and displays error notices if any field is missing.
-	 * It also checks if the shipping method is 'wc_pickup_store' and displays an error notice if the pickup store is not selected.
-	 *
-	 * @since 1.0.0
-	 */
 	public function timologio_process() {
-		global $woocommerce;
+		if ( $_POST[ self::FIELD_TYPE_ORDER ] !== self::TYPE_TIMOLOGIO ) {
+			return;
+		}
 
-		if ( $_POST['type_of_order'] == 'timologio' ) {
-			if ( $_POST['billing_vat_id'] == '' ) {
-				wc_add_notice( __( 'Συμπληρώστε το πεδίο ΑΦΜ' ), 'error' );
-			}
-			if ( $_POST['billing_activity'] == '' ) {
-				wc_add_notice( __( 'Συμπληρώστε την Δραστηριότητα' ), 'error' );
-			}
-			if ( $_POST['billing_company-nvm'] == '' ) {
-				wc_add_notice( __( 'Συμπληρώστε το πεδίο Επωνυμία εταιρίας' ), 'error' );
+		foreach ( $this->required_timologio_fields as $field => $label ) {
+			if ( empty( $_POST[ $field ] ) ) {
+				wc_add_notice( sprintf( __( 'Συμπληρώστε το πεδίο %s', 'nevma' ), $label ), 'error' );
 			}
 		}
 	}
 
-	public function timologio_checkout_field_update_order_meta( $order_id ) {
+	public function save_timologio_data( $order_id ) {
 		$order = wc_get_order( $order_id );
-
 		if ( ! $order ) {
 			return;
 		}
 
-		$order->update_meta_data( '_billing_company', sanitize_text_field( $_POST['billing_company-nvm'] ) );
-		$order->update_meta_data( '_type_of_order', sanitize_text_field( $_POST['type_of_order'] ) );
+		$fields_to_save = array(
+			'_billing_company' => 'billing_company_nvm',
+			'_type_of_order'   => self::FIELD_TYPE_ORDER,
+		);
+
+		foreach ( $fields_to_save as $meta_key => $post_key ) {
+			if ( isset( $_POST[ $post_key ] ) ) {
+				$order->update_meta_data( $meta_key, sanitize_text_field( $_POST[ $post_key ] ) );
+			}
+		}
+
 		$order->save();
 	}
+
 
 	public function show_timologio_fields( $order ) {
 		if ( $order->get_meta( '_billing_vat_id' ) != '' ) {
