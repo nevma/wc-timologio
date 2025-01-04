@@ -48,10 +48,7 @@ class Checkout {
 	 */
 	public function initiate_checkout_actions() {
 
-		if ( is_checkout() && $this->initiate_redirect_template() ) {
-
-			add_filter( 'woocommerce_locate_template', array( $this, 'intercept_wc_template' ), 10, 3 );
-
+		// if ( is_checkout() && $this->initiate_redirect_template() ) {
 			// Add timologio
 			add_action( 'woocommerce_before_checkout_billing_form', array( $this, 'add_timologio_apodeixi' ) );
 			add_filter( 'woocommerce_checkout_fields', array( $this, 'custom_woocommerce_billing_fields' ), 30 );
@@ -63,7 +60,7 @@ class Checkout {
 
 			add_action( 'woocommerce_checkout_process', array( $this, 'timologio_process' ) );
 
-		}
+		// }
 	}
 
 	public function remove_coupon_code_field_cart() {
@@ -203,16 +200,22 @@ class Checkout {
 	}
 
 	public function timologio_checkout_field_update_order_meta( $order_id ) {
+		$order = wc_get_order( $order_id );
 
-		update_post_meta( $order_id, '_billing_company', esc_attr( $_POST['billing_company-nvm'] ) );
-		update_post_meta( $order_id, '_type_of_order', esc_attr( $_POST['type_of_order'] ) );
+		if ( ! $order ) {
+			return;
+		}
+
+		$order->update_meta_data( '_billing_company', sanitize_text_field( $_POST['billing_company-nvm'] ) );
+		$order->update_meta_data( '_type_of_order', sanitize_text_field( $_POST['type_of_order'] ) );
+		$order->save();
 	}
 
 	public function show_timologio_fields( $order ) {
-		if ( get_post_meta( $order->id, '_billing_vat_id', true ) != '' ) {
-			echo '<p><strong>AFM:</strong> ' . get_post_meta( $order->id, '_billing_vat_id', true ) . '</p>';
-			echo '<p><strong>Δραστηριότητα:</strong> ' . get_post_meta( $order->id, '_billing_activity', true ) . '</p>';
-			echo '<p><strong>Επωνυμία Εταιρίας:</strong> ' . get_post_meta( $order->id, '_billing_company', true ) . '</p>';
+		if ( $order->get_meta( '_billing_vat_id' ) != '' ) {
+			echo '<p><strong>' . esc_html__( 'AFM:', 'nevma' ) . '</strong> ' . esc_html( $order->get_meta( '_billing_vat_id' ) ) . '</p>';
+			echo '<p><strong>' . esc_html__( 'Δραστηριότητα:', 'nevma' ) . '</strong> ' . esc_html( $order->get_meta( '_billing_activity' ) ) . '</p>';
+			echo '<p><strong>' . esc_html__( 'Επωνυμία Εταιρίας:', 'nevma' ) . '</strong> ' . esc_html( $order->get_meta( '_billing_company' ) ) . '</p>';
 		}
 	}
 
