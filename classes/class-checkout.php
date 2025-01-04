@@ -36,11 +36,20 @@ class Checkout {
 	);
 
 
+	/**
+	 * Constructor.
+	 *
+	 * Initializes the checkout functionality by registering necessary hooks.
+	 */
 	public function __construct() {
-
 		$this->register_hooks();
 	}
 
+	/**
+	 * Register hooks and filters for the checkout functionality.
+	 *
+	 * @return void
+	 */
 	private function register_hooks() {
 		add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
 		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'show_timologio_fields' ), 10, 1 );
@@ -85,6 +94,11 @@ class Checkout {
 		// }
 	}
 
+	/**
+	 * Disable coupon functionality in cart.
+	 *
+	 * @return bool
+	 */
 	public function remove_coupon_code_field_cart() {
 		return false;
 	}
@@ -98,6 +112,11 @@ class Checkout {
 		return $fields;
 	}
 
+	/**
+	 * Add radio buttons for selecting between 'Timologio' and 'Apodeixi'.
+	 *
+	 * @return void
+	 */
 	public function add_timologio_apodeixi() {
 		?>
 	<div class="choose-timologio">
