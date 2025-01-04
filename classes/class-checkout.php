@@ -24,6 +24,11 @@ class Checkout {
 	const TYPE_TIMOLOGIO   = 'timologio';
 	const TYPE_APODEIXI    = 'apodeixi';
 
+	/**
+	 * Required fields for timologio (invoice) form.
+	 *
+	 * @var array
+	 */
 	private $required_timologio_fields = array(
 		'billing_vat_id'      => 'ΑΦΜ',
 		'billing_activity'    => 'Δραστηριότητα',
