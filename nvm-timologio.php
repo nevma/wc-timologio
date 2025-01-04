@@ -1,9 +1,9 @@
 <?php //phpcs:ignore - \r\n issue
 
 /*
- * Plugin Name: Nevma plugin template
+ * Plugin Name:  WooCommerce Plugin for Timologio
  * Plugin URI:
- * Description: A start plugin template
+ * Description: WooCommerce Plugin for Timologio by Nevma
  * Version: 1.1.2
  * Author: Nevma Team
  * Author URI: https://woocommerce.com/vendor/nevma/
@@ -11,13 +11,16 @@
  *
  * Woo:
  * WC requires at least: 4.0
- * WC tested up to: 9.4
+ * WC tested up to: 9.5
 */
 
 /**
  * Set namespace.
  */
 namespace Nvm;
+
+use Nvm\Donor\Checkout as Nvm_Checkout;
+
 
 /**
  * Check that the file is not accessed directly.
@@ -29,7 +32,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Class Donor.
  */
-class Donor {
+class Timologio {
 	/**
 	 * The plugin version.
 	 *
@@ -92,7 +95,7 @@ class Donor {
 		self::$plugin_version = '1.0.1';
 
 		// Set the plugin namespace.
-		self::$namespace_prefix = 'Nvm\\Donor';
+		self::$namespace_prefix = 'Nvm\\Timologio';
 
 		// Set the plugin directory.
 		self::$plugin_dir = wp_normalize_path( plugin_dir_path( __FILE__ ) );
@@ -102,6 +105,7 @@ class Donor {
 
 		// Autoload.
 		self::autoload();
+		self::initiate_checkout_donor();
 	}
 
 	/**
@@ -133,6 +137,11 @@ class Donor {
 		);
 	}
 
+	public function initiate_checkout_donor() {
+		$init = new Nvm_Checkout();
+	}
+
+
 	/**
 	 * Runs on plugin activation.
 	 */
@@ -158,20 +167,20 @@ class Donor {
 /**
  * Activation Hook.
  */
-register_activation_hook( __FILE__, array( '\\Nvm\\Donor', 'on_plugin_activation' ) );
+register_activation_hook( __FILE__, array( '\\Nvm\\Timologio', 'on_plugin_activation' ) );
 
 /**
  * Dectivation Hook.
  */
-register_deactivation_hook( __FILE__, array( '\\Nvm\\Donor', 'on_plugin_deactivation' ) );
+register_deactivation_hook( __FILE__, array( '\\Nvm\\Timologio', 'on_plugin_deactivation' ) );
 
 
 /**
  * Uninstall Hook.
  */
-register_uninstall_hook( __FILE__, array( '\\Nvm\\Donor', 'on_plugin_uninstall' ) );
+register_uninstall_hook( __FILE__, array( '\\Nvm\\Timologio', 'on_plugin_uninstall' ) );
 
 /**
  * Load plugin.
  */
-add_action( 'plugins_loaded', array( '\\Nvm\\Donor', 'get_instance' ) );
+add_action( 'plugins_loaded', array( '\\Nvm\\Timologio', 'get_instance' ) );

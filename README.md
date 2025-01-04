@@ -1,1 +1,1 @@
-# Plugin Wordpress template
+# Plugin for WooCommerce Timologio By Nevma
