@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
-        'name' => 'nvm/donor',
+        'name' => 'nvm/timologio',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '1c35bfaf7dd0dd153b9c0636273e6c001be60b0e',
+        'reference' => '577fc2ffed6303767a46b6d6e9e3b69766fc450e',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -19,10 +19,10 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
-        'nvm/donor' => array(
+        'nvm/timologio' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '1c35bfaf7dd0dd153b9c0636273e6c001be60b0e',
+            'reference' => '577fc2ffed6303767a46b6d6e9e3b69766fc450e',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

@@ -9,7 +9,7 @@ class ComposerStaticInit8c4b4954924e428c1d23e9c79eacd9ab
     public static $prefixLengthsPsr4 = array (
         'N' => 
         array (
-            'Nvm\\Donor\\' => 10,
+            'Nvm\\Timoligio\\' => 14,
         ),
         'D' => 
         array (
@@ -18,7 +18,7 @@ class ComposerStaticInit8c4b4954924e428c1d23e9c79eacd9ab
     );
 
     public static $prefixDirsPsr4 = array (
-        'Nvm\\Donor\\' => 
+        'Nvm\\Timoligio\\' => 
         array (
             0 => __DIR__ . '/../../..' . '/classes',
         ),
