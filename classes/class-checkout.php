@@ -3,9 +3,7 @@
 /**
  * Set namespace.
  */
-namespace Nvm\Donor;
-
-use Nvm\Donor\Product as Nvm_Product;
+namespace Nvm\Timologio;
 
 /**
  * Check that the file is not accessed directly.
@@ -29,12 +27,7 @@ class Checkout {
 	 *
 	 * @var array
 	 */
-	private $required_timologio_fields = array(
-		'billing_vat_id'      => 'ΑΦΜ',
-		'billing_activity'    => 'Δραστηριότητα',
-		'billing_company_nvm' => 'Επωνυμία εταιρίας',
-	);
-
+	private $required_timologio_fields;
 
 	/**
 	 * Constructor.
@@ -42,6 +35,12 @@ class Checkout {
 	 * Initializes the checkout functionality by registering necessary hooks.
 	 */
 	public function __construct() {
+		$this->required_timologio_fields = array(
+			'billing_vat_id'      => __( 'ΑΦΜ', 'nevma' ),
+			'billing_activity'    => __( 'Δραστηριότητα', 'nevma' ),
+			'billing_company_nvm' => __( 'Επωνυμία εταιρίας', 'nevma' ),
+		);
+
 		$this->register_hooks();
 	}
 

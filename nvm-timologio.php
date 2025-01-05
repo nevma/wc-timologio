@@ -19,8 +19,7 @@
  */
 namespace Nvm;
 
-use Nvm\Donor\Checkout as Nvm_Checkout;
-
+use Nvm\Timologio\Checkout as Nvm_Checkout;
 
 /**
  * Check that the file is not accessed directly.

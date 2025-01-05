@@ -1,14 +1,14 @@
 {
 	"name": "nvm/timologio",
-	"description": "WooCommerce Timoligio",
+	"description": "WooCommerce Timologio",
 	"type": "project",
 	"license": "GPL-2.0-or-later",
 	"require": {
-		"php": ">=8"
+		"php": ">=7.4"
 	},
 	"autoload": {
 		"psr-4": {
-			"Nvm\\Timoligio\\": "classes"
+			"Nvm\\Timologio\\": "classes"
 		},
 		"exclude-from-classmap": [
 			"vendor/dealerdirect"
