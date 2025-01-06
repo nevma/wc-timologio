@@ -104,7 +104,6 @@ class Timologio {
 
 		// Autoload.
 		self::autoload();
-
 		$this->register_hooks();
 	}
 
