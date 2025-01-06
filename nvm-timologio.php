@@ -104,7 +104,12 @@ class Timologio {
 
 		// Autoload.
 		self::autoload();
-		self::initiate_checkout_donor();
+
+		$this->register_hooks();
+	}
+
+	public function register_hooks() {
+		add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
 	}
 
 	/**
@@ -137,6 +142,18 @@ class Timologio {
 	}
 
 	/**
+	 * Declares compatibility with WooCommerce HPOS (High-Performance Order Storage).
+	 *
+	 * @return void
+	 */
+	public function declare_hpos_compatibility() {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
+	}
+
+
+	/**
 	 * Check plugin dependencies.
 	 *
 	 * Verifies if WooCommerce is active without relying on the folder structure.
@@ -151,11 +168,6 @@ class Timologio {
 				esc_html__( 'Return to Plugins.', 'nevma' ) . '</a>'
 			);
 		}
-	}
-
-
-	public function initiate_checkout_donor() {
-		$init = new Nvm_Checkout();
 	}
 
 
