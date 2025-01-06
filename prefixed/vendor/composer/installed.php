@@ -3,7 +3,7 @@
         'name' => 'nvm/timologio',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '577fc2ffed6303767a46b6d6e9e3b69766fc450e',
+        'reference' => '49ff3ebf9d81be421785a0a08dab81f6225418f9',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'nvm/timologio' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '577fc2ffed6303767a46b6d6e9e3b69766fc450e',
+            'reference' => '49ff3ebf9d81be421785a0a08dab81f6225418f9',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),

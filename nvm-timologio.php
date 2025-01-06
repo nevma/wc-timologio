@@ -136,6 +136,24 @@ class Timologio {
 		);
 	}
 
+	/**
+	 * Check plugin dependencies.
+	 *
+	 * Verifies if WooCommerce is active without relying on the folder structure.
+	 */
+	public static function check_plugin_dependencies() {
+		// Check if the WooCommerce class exists.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			// Display an admin error message and terminate the script.
+			wp_die(
+				esc_html__( 'Sorry, but this plugin requires the WooCommerce plugin to be active.', 'your-text-domain' ) .
+				' <a href="' . esc_url( admin_url( 'plugins.php' ) ) . '">' .
+				esc_html__( 'Return to Plugins.', 'nevma' ) . '</a>'
+			);
+		}
+	}
+
+
 	public function initiate_checkout_donor() {
 		$init = new Nvm_Checkout();
 	}

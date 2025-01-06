@@ -49,7 +49,7 @@ class Checkout {
 	 *
 	 * @return void
 	 */
-	private function register_hooks() {
+	public function register_hooks() {
 		add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
 		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'show_timologio_fields' ), 10, 1 );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_timologio_data' ) );
