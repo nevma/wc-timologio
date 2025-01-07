@@ -34,9 +34,9 @@ class Checkout {
 	 */
 	public function __construct() {
 		$this->required_timologio_fields = array(
-			'billing_vat'   => __( 'ΑΦΜ', 'nevma' ),
-			'billing_irs'   => __( 'ΔΟΥ', 'nevma' ),
-			'billing_store' => __( 'Επωνυμία εταιρίας', 'nevma' ),
+			'billing_vat' => __( 'ΑΦΜ', 'nevma' ),
+			'billing_irs' => __( 'ΔΟΥ', 'nevma' ),
+			// 'billing_store' => __( 'Επωνυμία εταιρίας', 'nevma' ),
 			// 'billing_activity' => __( 'Δραστηριότητα', 'nevma' ),
 
 		);
@@ -101,24 +101,24 @@ class Checkout {
 
 		// Add additional fields for Timologio (invoice).
 		$timologia_fields = array(
-			'billing_vat'   => $this->get_field_config(
+			'billing_vat' => $this->get_field_config(
 				__( 'ΑΦΜ', 'nevma' ),
 				array( 'form-row-first' ),
 				28,
 				$billing_defaults['billing_vat']
 			),
-			'billing_irs'   => $this->get_field_config(
+			'billing_irs' => $this->get_field_config(
 				__( 'ΔΟΥ', 'nevma' ),
 				array( 'form-row-last' ),
 				29,
 				$billing_defaults['billing_irs']
 			),
-			'billing_store' => $this->get_field_config(
-				__( 'Επωνυμία Εταιρίας', 'nevma' ),
-				array( 'form-row-wide' ),
-				30,
-				$billing_defaults['billing_store']
-			),
+			// 'billing_store' => $this->get_field_config(
+			// __( 'Επωνυμία Εταιρίας', 'nevma' ),
+			// array( 'form-row-wide' ),
+			// 30,
+			// $billing_defaults['billing_store']
+			// ),
 			// 'billing_activity' => $this->get_field_config(
 			// __( 'Δραστηριότητα', 'nevma' ),
 			// array( 'form-row-last' ),

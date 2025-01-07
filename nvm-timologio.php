@@ -105,7 +105,7 @@ class Timologio {
 		// Autoload.
 		self::autoload();
 		$this->register_hooks();
-		$this->run_checkout();
+		$this->checkout();
 	}
 
 	public function register_hooks() {
@@ -113,16 +113,15 @@ class Timologio {
 		\add_action( 'wp_enqueue_scripts', array( $this, 'include_timologia' ) );
 	}
 
-	public static function run_checkout() {
+	public static function checkout() {
 		new Nvm_Checkout();
 	}
 
 
 	public function include_timologia() {
 		if ( is_cart() || is_checkout() ) {
-			// wp_enqueue_script( 'wc-timologia', plugin_dir_url(__FILE__) . 'script.js', array('jquery'), null, true);
-			\wp_enqueue_script( 'nvm-timologia', self::$plugin_dir . 'timologia.js', array( 'jquery' ), self::$plugin_version, true );
-			\wp_enqueue_style( 'nvm-billing-css', self::$plugin_dir . 'style.css', self::$plugin_version );
+			\wp_enqueue_script( 'nvm-timologia', self::$plugin_dir . '/js/timologia.js', array( 'jquery' ), self::$plugin_version, true );
+			\wp_enqueue_style( 'nvm-billing-css', self::$plugin_dir . '/css/style.css', array(), self::$plugin_version );
 		}
 	}
 
