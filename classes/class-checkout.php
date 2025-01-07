@@ -34,10 +34,10 @@ class Checkout {
 	 */
 	public function __construct() {
 		$this->required_timologio_fields = array(
-			'billing_vat_id'     => __( 'ΑΦΜ', 'nevma' ),
-			'billing_tax_office' => __( 'ΔΟΥ', 'nevma' ),
-			'billing_company'    => __( 'Επωνυμία εταιρίας', 'nevma' ),
-			'billing_activity'   => __( 'Δραστηριότητα', 'nevma' ),
+			'billing_vat'   => __( 'ΑΦΜ', 'nevma' ),
+			'billing_irs'   => __( 'ΔΟΥ', 'nevma' ),
+			'billing_store' => __( 'Επωνυμία εταιρίας', 'nevma' ),
+			// 'billing_activity' => __( 'Δραστηριότητα', 'nevma' ),
 
 		);
 
@@ -63,33 +63,8 @@ class Checkout {
 	public function initiate_checkout_actions() {
 		add_action( 'woocommerce_before_checkout_billing_form', array( $this, 'add_timologio_apodeixi' ), 30 );
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'customize_checkout_fields' ) );
-		add_filter( 'woocommerce_coupons_enabled', array( $this, 'disable_coupon_field_in_cart' ) );
 		add_action( 'woocommerce_checkout_process', array( $this, 'validate_timologio_fields' ) );
 	}
-
-	public function display_price_history_metabox() {
-
-		echo '<h3>' . __( 'Price History', 'nvm-product-price-history-inline' ) . '</h3>';
-		global $post;
-		$product       = wc_get_product( $post->ID );
-		$price_history = $product->get_meta( '_nvm_price_history' );
-
-		if ( ! is_array( $price_history ) || empty( $price_history ) ) {
-			echo '<p>' . __( 'No price changes recorded.', 'nvm-product-price-history-inline' ) . '</p>';
-			return;
-		}
-
-		echo '<ul>';
-		foreach ( array_reverse( $price_history ) as $entry ) {
-			echo '<li>';
-			echo esc_html( date( 'd/m/Y H:i', strtotime( $entry['date'] ) ) );
-			echo ' - ' . '<strong>' . wc_price( $entry['sale_price'] ) . '</strong>';
-			echo '</li>';
-		}
-		echo '</ul>';
-	}
-
-
 
 	/**
 	 * Customize checkout fields.
@@ -99,35 +74,61 @@ class Checkout {
 	 * @return array
 	 */
 	public function customize_checkout_fields( $fields ) {
+		// Get the selected value for the tax_type field.
+		$chosen = WC()->session->get( 'tax_type' );
+		$chosen = empty( $chosen ) ? WC()->checkout->get_value( 'tax_type' ) : $chosen;
+		$chosen = empty( $chosen ) ? self::TYPE_APODEIXI : $chosen;
 
-		$chosen = WC()->session->get( 'timologio' );
-		$chosen = empty( $chosen ) ? WC()->checkout->get_value( 'delivery' ) : $chosen;
-		$chosen = empty( $chosen ) ? '0' : $chosen;
-
-		$radio = woocommerce_form_field(
-			'delivery',
-			array(
-				'type'    => 'radio',
-				'class'   => array( 'form-row-wide' ),
-				'options' => array(
-					self::TYPE_APODEIXI  => __( 'Απόδειξη', 'nevma' ),
-					self::TYPE_TIMOLOGIO => __( 'Τιμολόγιο', 'nevma' ),
-				),
-
+		// Add the custom radio field directly to the billing section.
+		$fields['billing'][ self::FIELD_TYPE_ORDER ] = array(
+			'type'     => 'radio',
+			'class'    => array( 'form-row-wide', self::FIELD_TYPE_ORDER ),
+			'options'  => array(
+				self::TYPE_APODEIXI  => __( 'Απόδειξη', 'nevma' ),
+				self::TYPE_TIMOLOGIO => __( 'Τιμολόγιο', 'nevma' ),
 			),
-			$chosen
+			'default'  => $chosen,
+			'priority' => 27, // Ensure it appears after "Last Name".
 		);
 
-		// $fields['billing'] = array_merge( $radio, $fields['billing'] );
+		// Define default values for Timologio fields.
+		$billing_defaults = array(
+			'billing_vat'      => WC()->checkout->get_value( 'billing_vat' ),
+			'billing_irs'      => WC()->checkout->get_value( 'billing_irs' ),
+			'billing_store'    => WC()->checkout->get_value( 'billing_store' ),
+			'billing_activity' => WC()->checkout->get_value( 'billing_activity' ),
+		);
 
-		// $new_fields = array(
-		// 'billing_vat_id'      => $this->get_field_config( __( 'ΑΦΜ', 'nevma' ), array( 'form-row-first' ) ),
-		// 'billing_tax_office'  => $this->get_field_config( __( 'ΔΟΥ', 'nevma' ), array( 'form-row-last' ) ),
-		// 'billing_company_nvm' => $this->get_field_config( __( 'Επωνυμία Εταιρίας', 'nevma' ), array( 'form-row-first' ) ),
-		// 'billing_activity'    => $this->get_field_config( __( 'Δραστηριότητα', 'nevma' ), array( 'form-row-last' ) ),
-		// );
+		// Add additional fields for Timologio (invoice).
+		$timologia_fields = array(
+			'billing_vat'   => $this->get_field_config(
+				__( 'ΑΦΜ', 'nevma' ),
+				array( 'form-row-first' ),
+				28,
+				$billing_defaults['billing_vat']
+			),
+			'billing_irs'   => $this->get_field_config(
+				__( 'ΔΟΥ', 'nevma' ),
+				array( 'form-row-last' ),
+				29,
+				$billing_defaults['billing_irs']
+			),
+			'billing_store' => $this->get_field_config(
+				__( 'Επωνυμία Εταιρίας', 'nevma' ),
+				array( 'form-row-wide' ),
+				30,
+				$billing_defaults['billing_store']
+			),
+			// 'billing_activity' => $this->get_field_config(
+			// __( 'Δραστηριότητα', 'nevma' ),
+			// array( 'form-row-last' ),
+			// 31,
+			// $billing_defaults['billing_activity']
+			// ),
+		);
 
-		// $fields['billing'] = array_merge( $new_fields, $fields['billing'] );
+		// Merge custom fields with existing billing fields, preserving order.
+		$fields['billing'] = array_merge( $fields['billing'], $timologia_fields );
 
 		return $fields;
 	}
@@ -135,11 +136,14 @@ class Checkout {
 	/**
 	 * Get field configuration for billing fields.
 	 *
-	 * @param string $label The field label.
+	 * @param string $label     The field label.
+	 * @param array  $css_class Additional CSS classes for the field.
+	 * @param int    $priority  The field priority.
+	 * @param mixed  $default   The default value for the field.
 	 *
 	 * @return array
 	 */
-	private function get_field_config( $label, $css_class = array() ) {
+	private function get_field_config( $label, $css_class = array(), $priority = 28, $default = '' ) {
 		$pre_class = array( 'form-row', 'timologio' );
 
 		if ( ! empty( $css_class ) ) {
@@ -151,8 +155,11 @@ class Checkout {
 			'required' => false,
 			'type'     => 'text',
 			'class'    => $pre_class,
+			'priority' => $priority,
+			'default'  => $default,
 		);
 	}
+
 
 
 	/**
@@ -185,15 +192,6 @@ class Checkout {
 	}
 
 	/**
-	 * Disable coupon functionality in the cart.
-	 *
-	 * @return bool
-	 */
-	public function disable_coupon_field_in_cart() {
-		return false;
-	}
-
-	/**
 	 * Validate required fields for timologio.
 	 *
 	 * @return void
@@ -220,7 +218,7 @@ class Checkout {
 
 		if ( $order ) {
 			$fields_to_save = array(
-				'_billing_company' => 'billing_company_nvm',
+				'_billing_company' => 'billing_store',
 				'_type_of_order'   => self::FIELD_TYPE_ORDER,
 			);
 
@@ -243,7 +241,7 @@ class Checkout {
 	 */
 	public function show_timologio_fields( $order ) {
 		$fields_to_display = array(
-			'_billing_vat_id'   => __( 'AFM', 'nevma' ),
+			'_billing_vat'      => __( 'AFM', 'nevma' ),
 			'_billing_activity' => __( 'Activity', 'nevma' ),
 			'_billing_company'  => __( 'Company Name', 'nevma' ),
 		);
