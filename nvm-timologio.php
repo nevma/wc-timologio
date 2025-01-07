@@ -110,7 +110,7 @@ class Timologio {
 
 	public function register_hooks() {
 		\add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
-		\add_action( 'wp_enqueue_scripts', 'include_timologia' );
+		\add_action( 'wp_enqueue_scripts', array( $this, 'include_timologia' ) );
 	}
 
 	public static function run_checkout() {
