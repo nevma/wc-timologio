@@ -13,9 +13,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class adae
+ * Class Vies
  */
 class Vies {
+
+	// I need to make it work with vies
 
 	/**
 	 * Constructor.
