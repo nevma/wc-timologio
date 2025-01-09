@@ -32,11 +32,9 @@ class Aade {
 	 */
 	public function register_hooks() {
 
-		if ( is_checkout() ) {
 			add_action( 'wp_head', array( $this, 'vat_number_script' ) );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
-		}
 	}
 
 	public function vat_number_script() {
@@ -49,17 +47,17 @@ class Aade {
 
 					if (vatNumber) {
 						$.ajax({
-							url: '/wp-admin/admin-ajax.php',
+							url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
 							type: 'POST',
 							data: {
 								action: 'fetch_vat_details',
 								vat_number: vatNumber,
-								security: '<?php echo $ajax_nonce; ?>'
+								security: '<?php echo esc_js( $ajax_nonce ); ?>'
 							},
 							success: function(response) {
 								if (response.success) {
-									$('#billing_tax_office').val(response.data.doy);
-									$('#billing_company-nvm').val(response.data.epwnymia);
+									$('#billing_irs').val(response.data.doy);
+									$('#billing_company').val(response.data.epwnymia);
 									$('#billing_activity').val(response.data.drastiriotita);
 								} else {
 									alert('Invalid VAT number or unable to fetch details.');
@@ -75,13 +73,15 @@ class Aade {
 
 	function fetch_vat_details() {
 
+		error_log( 'fetch!!!' );
+
 		check_ajax_referer( 'nvm_secure_nonce', 'security' );
 
 		if ( isset( $_POST['vat_number'] ) ) {
 			$vat_number  = sanitize_text_field( $_POST['vat_number'] );
 			$xmlResponse = $this->check_for_valid_vat_aade( $vat_number );
 
-			$flag = get_aade_element( $xmlResponse, 'deactivation_flag' );
+			$flag = $this->get_aade_element( $xmlResponse, 'deactivation_flag' );
 
 			if ( ! empty( $flag ) ) {
 				wp_send_json_success(
@@ -104,7 +104,7 @@ class Aade {
 	function get_aade_firm_act_descr( $xmlResponse ) {
 
 		// Load the XML string into a SimpleXMLElement object
-		$xml = new SimpleXMLElement( $xmlResponse );
+		$xml = new \SimpleXMLElement( $xmlResponse );
 
 		$xml->registerXPathNamespace( 'env', 'http://www.w3.org/2003/05/soap-envelope' );
 		$xml->registerXPathNamespace( 'xsd', 'http://www.w3.org/2001/XMLSchema' );
@@ -140,7 +140,7 @@ class Aade {
 	public function get_aade_element( $xmlResponse, $elementName ) {
 
 		// Load the XML string into a SimpleXMLElement object
-		$xml = new SimpleXMLElement( $xmlResponse );
+		$xml = new \SimpleXMLElement( $xmlResponse );
 
 		$xml->registerXPathNamespace( 'env', 'http://www.w3.org/2003/05/soap-envelope' );
 		$xml->registerXPathNamespace( 'xsd', 'http://www.w3.org/2001/XMLSchema' );
