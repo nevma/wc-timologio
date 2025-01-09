@@ -1,1 +1,4 @@
-
+#type_of_order_field .woocommerce-input-wrapper label,
+#type_of_order_field .woocommerce-input-wrapper input {
+	display: inline-block;
+}

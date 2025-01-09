@@ -91,7 +91,7 @@ class Timologio {
 	public function __construct() {
 
 		// Set the plugin version.
-		self::$plugin_version = '1.0.1';
+		self::$plugin_version = '1.0.2';
 
 		// Set the plugin namespace.
 		self::$namespace_prefix = 'Nvm\\Timologio';
@@ -109,22 +109,48 @@ class Timologio {
 	}
 
 	public function register_hooks() {
-		\add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
-		\add_action( 'wp_enqueue_scripts', array( $this, 'include_timologia' ) );
+		add_action( 'before_woocommerce_init', array( $this, 'declare_hpos_compatibility' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'styles_and_scripts' ) );
 	}
 
 	public static function checkout() {
 		new Nvm_Checkout();
 	}
 
+	/**
+	 * Styles and scripts.
+	 *
+	 * @param string $hook_suffix
+	 */
+	public function styles_and_scripts( $hook_suffix ) {
+		wp_enqueue_style(
+			'nvm-timologio',
+			self::$plugin_url . 'css/style.css',
+			array(),
+			self::$plugin_version
+		);
 
-	public function include_timologia() {
-		if ( is_cart() || is_checkout() ) {
-			\wp_enqueue_script( 'nvm-timologia', self::$plugin_dir . '/js/timologia.js', array( 'jquery' ), self::$plugin_version, true );
-			\wp_enqueue_style( 'nvm-billing-css', self::$plugin_dir . '/css/style.css', array(), self::$plugin_version );
-		}
+		wp_enqueue_script(
+			'nvm-timologio',
+			self::$plugin_url . 'js/timologio.js',
+			array(),
+			self::$plugin_version,
+			false,
+			array(
+				'strategy'  => 'defer',
+				'in_footer' => true,
+			)
+		);
+
+		// wp_localize_script(
+		// 'plugin-tpl',
+		// 'plugin_tpl_globals',
+		// array(
+		// 'ajax_url' => admin_url( 'admin-ajax.php' ),
+		// 'nonce'    => wp_create_nonce( 'plugin-tpl' ),
+		// )
+		// );
 	}
-
 
 	/**
 	 * Autoload.

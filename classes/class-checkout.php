@@ -12,6 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'We\'re sorry, but you cannot directly access this file.' );
 }
 
+// other plugins
+// expert
+// billing_vat_id
+// billing_tax_office
+// billing_company
+// billing_activity
+
+
 /**
  * Class Checkout
  */
@@ -34,10 +42,10 @@ class Checkout {
 	 */
 	public function __construct() {
 		$this->required_timologio_fields = array(
-			'billing_vat' => __( 'ΑΦΜ', 'nevma' ),
-			'billing_irs' => __( 'ΔΟΥ', 'nevma' ),
-			// 'billing_store' => __( 'Επωνυμία εταιρίας', 'nevma' ),
-			// 'billing_activity' => __( 'Δραστηριότητα', 'nevma' ),
+			'billing_vat'      => __( 'ΑΦΜ', 'nevma' ),
+			'billing_irs'      => __( 'ΔΟΥ', 'nevma' ),
+			'billing_company'  => __( 'Επωνυμία εταιρίας', 'nevma' ),
+			'billing_activity' => __( 'Δραστηριότητα', 'nevma' ),
 
 		);
 
@@ -61,7 +69,6 @@ class Checkout {
 	 * @return void
 	 */
 	public function initiate_checkout_actions() {
-		add_action( 'woocommerce_before_checkout_billing_form', array( $this, 'add_timologio_apodeixi' ), 30 );
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'customize_checkout_fields' ) );
 		add_action( 'woocommerce_checkout_process', array( $this, 'validate_timologio_fields' ) );
 	}
@@ -95,36 +102,36 @@ class Checkout {
 		$billing_defaults = array(
 			'billing_vat'      => WC()->checkout->get_value( 'billing_vat' ),
 			'billing_irs'      => WC()->checkout->get_value( 'billing_irs' ),
-			'billing_store'    => WC()->checkout->get_value( 'billing_store' ),
+			'billing_store'    => WC()->checkout->get_value( 'billing_company' ),
 			'billing_activity' => WC()->checkout->get_value( 'billing_activity' ),
 		);
 
 		// Add additional fields for Timologio (invoice).
 		$timologia_fields = array(
-			'billing_vat' => $this->get_field_config(
+			'billing_vat'      => $this->get_field_config(
 				__( 'ΑΦΜ', 'nevma' ),
 				array( 'form-row-first' ),
 				28,
 				$billing_defaults['billing_vat']
 			),
-			'billing_irs' => $this->get_field_config(
+			'billing_irs'      => $this->get_field_config(
 				__( 'ΔΟΥ', 'nevma' ),
 				array( 'form-row-last' ),
 				29,
 				$billing_defaults['billing_irs']
 			),
-			// 'billing_store' => $this->get_field_config(
-			// __( 'Επωνυμία Εταιρίας', 'nevma' ),
-			// array( 'form-row-wide' ),
-			// 30,
-			// $billing_defaults['billing_store']
-			// ),
-			// 'billing_activity' => $this->get_field_config(
-			// __( 'Δραστηριότητα', 'nevma' ),
-			// array( 'form-row-last' ),
-			// 31,
-			// $billing_defaults['billing_activity']
-			// ),
+			'billing_company'  => $this->get_field_config(
+				__( 'Επωνυμία Εταιρίας', 'nevma' ),
+				array( 'form-row-wide' ),
+				30,
+				$billing_defaults['billing_company']
+			),
+			'billing_activity' => $this->get_field_config(
+				__( 'Δραστηριότητα', 'nevma' ),
+				array( 'form-row-wide' ),
+				31,
+				$billing_defaults['billing_activity']
+			),
 		);
 
 		// Merge custom fields with existing billing fields, preserving order.
@@ -159,8 +166,6 @@ class Checkout {
 			'default'  => $default,
 		);
 	}
-
-
 
 	/**
 	 * Add radio buttons for order type selection.
