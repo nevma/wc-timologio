@@ -59,6 +59,13 @@ class Aade {
 									$('#billing_irs').val(response.data.doy);
 									$('#billing_company').val(response.data.epwnymia);
 									$('#billing_activity').val(response.data.drastiriotita);
+									$('#billing_address_1').val(response.data.address);
+									$('#billing_country').val(response.data.country);
+									$('#billing_city').val(response.data.city);
+									$('#billing_postcode').val(response.data.postcode);
+
+									console.log(response.data);
+
 								} else {
 									alert('Invalid VAT number or unable to fetch details.');
 								}
@@ -73,12 +80,11 @@ class Aade {
 
 	function fetch_vat_details() {
 
-		error_log( 'fetch!!!' );
-
 		check_ajax_referer( 'nvm_secure_nonce', 'security' );
 
 		if ( isset( $_POST['vat_number'] ) ) {
 			$vat_number  = sanitize_text_field( $_POST['vat_number'] );
+			$vat_number  = str_replace( 'EL', '', $vat_number );
 			$xmlResponse = $this->check_for_valid_vat_aade( $vat_number );
 
 			$flag = $this->get_aade_element( $xmlResponse, 'deactivation_flag' );
@@ -89,6 +95,11 @@ class Aade {
 						'doy'           => $this->get_aade_element( $xmlResponse, 'doy_descr' ),
 						'epwnymia'      => $this->get_aade_element( $xmlResponse, 'onomasia' ),
 						'drastiriotita' => $this->get_aade_firm_act_descr( $xmlResponse ),
+						'address'       => $this->get_aade_element( $xmlResponse, 'postal_address' ) . ' ' . $this->get_aade_element( $xmlResponse, 'postal_address_no' ),
+						'country'       => 'GR',
+						'city'          => $this->get_aade_element( $xmlResponse, 'postal_area_description' ),
+						'postcode'      => $this->get_aade_element( $xmlResponse, 'postal_zip_code' ),
+
 					)
 				);
 			} else {
@@ -138,6 +149,8 @@ class Aade {
 	 * @return string | null The value of the specified element or null if not found .
 	 * */
 	public function get_aade_element( $xmlResponse, $elementName ) {
+		error_log( '$xmlResponse:' );
+		error_log( print_r( $xmlResponse, true ) );
 
 		// Load the XML string into a SimpleXMLElement object
 		$xml = new \SimpleXMLElement( $xmlResponse );
