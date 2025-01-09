@@ -63,9 +63,6 @@ class Aade {
 									$('#billing_country').val(response.data.country);
 									$('#billing_city').val(response.data.city);
 									$('#billing_postcode').val(response.data.postcode);
-
-									console.log(response.data);
-
 								} else {
 									alert('Invalid VAT number or unable to fetch details.');
 								}
@@ -149,8 +146,6 @@ class Aade {
 	 * @return string | null The value of the specified element or null if not found .
 	 * */
 	public function get_aade_element( $xmlResponse, $elementName ) {
-		error_log( '$xmlResponse:' );
-		error_log( print_r( $xmlResponse, true ) );
 
 		// Load the XML string into a SimpleXMLElement object
 		$xml = new \SimpleXMLElement( $xmlResponse );

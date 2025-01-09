@@ -72,7 +72,7 @@ class Checkout {
 	 */
 	public function register_hooks() {
 		add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
-		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'show_timologio_fields' ) );
+		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'order_show_timologio_fields' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_timologio_data' ) );
 	}
 
@@ -154,6 +154,7 @@ class Checkout {
 		return $fields;
 	}
 
+	// Remove the Optional note and show it with a star
 	public function customize_form_field( $field, $key, $args, $value ) {
 
 		$keys = $this->required_timologio_keys;
@@ -215,7 +216,7 @@ class Checkout {
 	}
 
 	/**
-	 * Save timologio data to the order.
+	 * Save timologio data to the order and the user profile.
 	 *
 	 * @param int $order_id The order ID.
 	 *
@@ -225,18 +226,44 @@ class Checkout {
 		$order = wc_get_order( $order_id );
 
 		if ( $order ) {
-			$fields_to_save = array(
-				'_billing_company' => 'billing_store',
-				'_type_of_order'   => self::FIELD_TYPE_ORDER,
-			);
+			$user_id        = $order->get_user_id();
+			$fields_to_save = $this->required_timologio_keys;
 
-			foreach ( $fields_to_save as $meta_key => $post_key ) {
+			foreach ( $fields_to_save as $post_key ) {
 				if ( isset( $_POST[ $post_key ] ) ) {
-					$order->update_meta_data( $meta_key, sanitize_text_field( wp_unslash( $_POST[ $post_key ] ) ) );
+					$sanitized_value = sanitize_text_field( wp_unslash( $_POST[ $post_key ] ) );
+
+					// Save to order meta.
+					$order->update_meta_data( $post_key, $sanitized_value );
+
+					// Save to user meta if user is logged in.
+					if ( $user_id ) {
+						update_user_meta( $user_id, $post_key, $sanitized_value );
+					}
 				}
 			}
 
 			$order->save();
+		}
+	}
+
+
+	/**
+	 * Show timologio fields in the admin order view.
+	 *
+	 * @param \WC_Order $order The order object.
+	 *
+	 * @return void
+	 */
+	public function order_show_timologio_fields( $order ) {
+		$fields_to_display = $this->required_timologio_fields;
+
+		foreach ( $fields_to_display as $meta_key => $label ) {
+			$value = $order->get_meta( $meta_key );
+
+			if ( ! empty( $value ) ) {
+				printf( '<p><strong>%s:</strong> %s</p>', esc_html( $label ), esc_html( $value ) );
+			}
 		}
 	}
 
@@ -247,18 +274,29 @@ class Checkout {
 	 *
 	 * @return void
 	 */
-	public function show_timologio_fields( $order ) {
-		$fields_to_display = array(
-			'_billing_vat'      => __( 'AFM', 'nevma' ),
-			'_billing_activity' => __( 'Activity', 'nevma' ),
-			'_billing_company'  => __( 'Company Name', 'nevma' ),
-		);
+	public function user_show_timologio_fields( $order ) {
+		// Fields to display for the order.
+		$fields_to_display = $this->required_timologio_fields;
 
 		foreach ( $fields_to_display as $meta_key => $label ) {
 			$value = $order->get_meta( $meta_key );
 
 			if ( ! empty( $value ) ) {
 				printf( '<p><strong>%s:</strong> %s</p>', esc_html( $label ), esc_html( $value ) );
+			}
+		}
+
+		// Fetch and display user-specific timologio fields.
+		$user_id = $order->get_user_id();
+		if ( $user_id ) {
+			echo '<h4>' . esc_html__( 'User Timologio Fields', 'nevma' ) . '</h4>';
+
+			foreach ( $fields_to_display as $meta_key => $label ) {
+				$user_value = get_user_meta( $user_id, $meta_key, true );
+
+				if ( ! empty( $user_value ) ) {
+					printf( '<p><strong>%s:</strong> %s</p>', esc_html( $label ), esc_html( $user_value ) );
+				}
 			}
 		}
 	}
