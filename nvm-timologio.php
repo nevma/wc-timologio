@@ -21,6 +21,8 @@ namespace Nvm;
 
 use Nvm\Timologio\Checkout as Nvm_Checkout;
 use Nvm\Timologio\Aade as Nvm_Aade;
+use Nvm\Timologio\Vies as Nvm_Vies;
+
 
 /**
  * Check that the file is not accessed directly.
