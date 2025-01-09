@@ -20,6 +20,7 @@
 namespace Nvm;
 
 use Nvm\Timologio\Checkout as Nvm_Checkout;
+use Nvm\Timologio\Aade as Nvm_Aade;
 
 /**
  * Check that the file is not accessed directly.
@@ -106,6 +107,7 @@ class Timologio {
 		self::autoload();
 		$this->register_hooks();
 		$this->checkout();
+		$this->aade();
 	}
 
 	public function register_hooks() {
@@ -116,6 +118,12 @@ class Timologio {
 	public static function checkout() {
 		new Nvm_Checkout();
 	}
+
+	public static function aade() {
+		new Nvm_Aade();
+	}
+
+
 
 	/**
 	 * Styles and scripts.
