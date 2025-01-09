@@ -21,7 +21,10 @@ namespace Nvm;
 
 use Nvm\Timologio\Checkout as Nvm_Checkout;
 use Nvm\Timologio\Aade as Nvm_Aade;
+use Nvm\Timologio\Settings as Nvm_Settings;
+
 use Nvm\Timologio\Vies as Nvm_Vies;
+
 
 
 /**
@@ -110,6 +113,7 @@ class Timologio {
 		$this->register_hooks();
 		$this->checkout();
 		$this->aade();
+		$this->settings();
 	}
 
 	public function register_hooks() {
@@ -122,7 +126,18 @@ class Timologio {
 	}
 
 	public static function aade() {
-		new Nvm_Aade();
+
+		$enabled  = get_option( 'timologio_enable_feature' );
+		$username = get_option( 'timologio_aade_user' );
+		$password = get_option( 'timologio_aade_pass' );
+
+		if ( 'yes' === $enabled && ! empty( $username ) && ! empty( $password ) ) {
+			new Nvm_Aade();
+		}
+	}
+
+	public static function settings() {
+		new Nvm_Settings();
 	}
 
 

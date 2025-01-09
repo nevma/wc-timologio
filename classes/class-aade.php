@@ -175,10 +175,10 @@ class Aade {
 		$transient_key = "{$vat_id}_nvm_aade_check";
 		$result        = delete_transient( $transient_key );
 		$result        = get_transient( $transient_key );
+		$username      = get_option( 'timologio_aade_user' );
+		$password      = get_option( 'timologio_aade_pass' );
 
 		if ( false === $result ) {
-			$username = '106550454K';
-			$password = '106550454K';
 			$url      = 'https://www1.gsis.gr/wsaade/RgWsPublic2/RgWsPublic2?WSDL';
 			$envelope = <<<XML
 			<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:ns2="http://rgwspublic2/RgWsPublic2Service" xmlns:ns3="http://rgwspublic2/RgWsPublic2">
