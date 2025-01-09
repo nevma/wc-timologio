@@ -31,19 +31,20 @@ class Aade {
 	 * @return void
 	 */
 	public function register_hooks() {
-		add_action( 'wp_head', array( $this, 'vat_number_script' ) );
-		add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
-		add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
+
+		if ( is_checkout() ) {
+			add_action( 'wp_head', array( $this, 'vat_number_script' ) );
+			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
+			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
+		}
 	}
 
 	public function vat_number_script() {
-		if ( is_checkout() ) :
-
-			$ajax_nonce = wp_create_nonce( 'nvm_secure_nonce' );
-			?>
+		$ajax_nonce = wp_create_nonce( 'nvm_secure_nonce' );
+		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
-				$('#billing_vat_id').on('blur', function() {
+				$('#billing_vat').on('blur', function() {
 					var vatNumber = $(this).val();
 
 					if (vatNumber) {
@@ -69,10 +70,7 @@ class Aade {
 				});
 			});
 		</script>
-
-
-			<?php
-			endif;
+		<?php
 	}
 
 	function fetch_vat_details() {
@@ -81,16 +79,16 @@ class Aade {
 
 		if ( isset( $_POST['vat_number'] ) ) {
 			$vat_number  = sanitize_text_field( $_POST['vat_number'] );
-			$xmlResponse = check_for_valid_vat_aade( $vat_number );
+			$xmlResponse = $this->check_for_valid_vat_aade( $vat_number );
 
 			$flag = get_aade_element( $xmlResponse, 'deactivation_flag' );
 
 			if ( ! empty( $flag ) ) {
 				wp_send_json_success(
 					array(
-						'doy'           => get_aade_element( $xmlResponse, 'doy_descr' ),
-						'epwnymia'      => get_aade_element( $xmlResponse, 'onomasia' ),
-						'drastiriotita' => get_aade_firm_act_descr( $xmlResponse ),
+						'doy'           => $this->get_aade_element( $xmlResponse, 'doy_descr' ),
+						'epwnymia'      => $this->get_aade_element( $xmlResponse, 'onomasia' ),
+						'drastiriotita' => $this->get_aade_firm_act_descr( $xmlResponse ),
 					)
 				);
 			} else {
@@ -171,8 +169,8 @@ class Aade {
 		$result        = get_transient( $transient_key );
 
 		if ( false === $result ) {
-			$username = '106550454K'; // get_option( 'tfwc_settings_tab_timologia_aade_username' );
-			$password = '106550454K'; // get_option( 'tfwc_settings_tab_timologia_aade_password' );
+			$username = '106550454K';
+			$password = '106550454K';
 			$url      = 'https://www1.gsis.gr/wsaade/RgWsPublic2/RgWsPublic2?WSDL';
 			$envelope = <<<XML
 			<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:ns1="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:ns2="http://rgwspublic2/RgWsPublic2Service" xmlns:ns3="http://rgwspublic2/RgWsPublic2">
