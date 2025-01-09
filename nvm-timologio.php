@@ -135,21 +135,8 @@ class Timologio {
 			self::$plugin_url . 'js/timologio.js',
 			array(),
 			self::$plugin_version,
-			false,
-			array(
-				'strategy'  => 'defer',
-				'in_footer' => true,
-			)
+			true
 		);
-
-		// wp_localize_script(
-		// 'plugin-tpl',
-		// 'plugin_tpl_globals',
-		// array(
-		// 'ajax_url' => admin_url( 'admin-ajax.php' ),
-		// 'nonce'    => wp_create_nonce( 'plugin-tpl' ),
-		// )
-		// );
 	}
 
 	/**
@@ -232,7 +219,6 @@ class Timologio {
 	}
 }
 
-
 /**
  * Activation Hook.
  */
@@ -242,7 +228,6 @@ register_activation_hook( __FILE__, array( '\\Nvm\\Timologio', 'on_plugin_activa
  * Dectivation Hook.
  */
 register_deactivation_hook( __FILE__, array( '\\Nvm\\Timologio', 'on_plugin_deactivation' ) );
-
 
 /**
  * Uninstall Hook.

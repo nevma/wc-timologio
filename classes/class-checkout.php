@@ -38,6 +38,13 @@ class Checkout {
 	private $required_timologio_fields;
 
 	/**
+	 * Required fields for timologio (invoice) form.
+	 *
+	 * @var array
+	 */
+	private $required_timologio_keys;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -46,7 +53,13 @@ class Checkout {
 			'billing_irs'      => __( 'ΔΟΥ', 'nevma' ),
 			'billing_company'  => __( 'Επωνυμία εταιρίας', 'nevma' ),
 			'billing_activity' => __( 'Δραστηριότητα', 'nevma' ),
+		);
 
+		$this->required_timologio_keys = array(
+			'billing_vat',
+			'billing_irs',
+			'billing_company',
+			'billing_activity',
 		);
 
 		$this->register_hooks();
@@ -71,6 +84,7 @@ class Checkout {
 	public function initiate_checkout_actions() {
 		add_filter( 'woocommerce_checkout_fields', array( $this, 'customize_checkout_fields' ) );
 		add_action( 'woocommerce_checkout_process', array( $this, 'validate_timologio_fields' ) );
+		add_filter( 'woocommerce_form_field', array( $this, 'customize_form_field' ), 10, 4 );
 	}
 
 	/**
@@ -102,7 +116,7 @@ class Checkout {
 		$billing_defaults = array(
 			'billing_vat'      => WC()->checkout->get_value( 'billing_vat' ),
 			'billing_irs'      => WC()->checkout->get_value( 'billing_irs' ),
-			'billing_store'    => WC()->checkout->get_value( 'billing_company' ),
+			'billing_company'  => WC()->checkout->get_value( 'billing_company' ),
 			'billing_activity' => WC()->checkout->get_value( 'billing_activity' ),
 		);
 
@@ -139,6 +153,28 @@ class Checkout {
 
 		return $fields;
 	}
+
+
+	public function customize_form_field( $field, $key, $args, $value ) {
+
+		$keys = $this->required_timologio_keys;
+
+		if ( in_array( $key, $keys, true ) ) {
+
+			error_log( '$key:' );
+			error_log( print_r( $key, true ) );
+
+			$field = preg_replace( '/<span class="optional">.*?<\/span>/', '', $field );
+
+			$field = preg_replace(
+				'/<label(.*?)>(.*?)<\/label>/',
+				'<label$1>$2 <abbr class="required" title="required">*</abbr></label>',
+				$field
+			);
+		}
+		return $field;
+	}
+
 
 	/**
 	 * Get field configuration for billing fields.
