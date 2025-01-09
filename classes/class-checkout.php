@@ -200,35 +200,6 @@ class Checkout {
 	}
 
 	/**
-	 * Add radio buttons for order type selection.
-	 *
-	 * @return void
-	 */
-	public function add_timologio_apodeixi() {
-		?>
-		<script type="text/javascript">
-			document.addEventListener('DOMContentLoaded', function () {
-				const orderTypeRadios = document.querySelectorAll('input[name="<?php echo esc_js( self::FIELD_TYPE_ORDER ); ?>"]');
-
-				function updateDisplay() {
-					const selectedValue = document.querySelector('input[name="<?php echo esc_js( self::FIELD_TYPE_ORDER ); ?>"]:checked').value;
-					document.querySelectorAll('.timologio').forEach(el => el.style.display = (selectedValue === '<?php echo esc_js( self::TYPE_TIMOLOGIO ); ?>') ? 'block' : 'none');
-				}
-
-				updateDisplay();
-				orderTypeRadios.forEach(radio => radio.addEventListener('change', updateDisplay));
-			});
-		</script>
-
-		<style>
-			.woocommerce form .form-row label, .woocommerce-page form .form-row label {
-				display: inline;
-			}
-		</style>
-		<?php
-	}
-
-	/**
 	 * Validate required fields for timologio.
 	 *
 	 * @return void
