@@ -154,15 +154,11 @@ class Checkout {
 		return $fields;
 	}
 
-
 	public function customize_form_field( $field, $key, $args, $value ) {
 
 		$keys = $this->required_timologio_keys;
 
 		if ( in_array( $key, $keys, true ) ) {
-
-			error_log( '$key:' );
-			error_log( print_r( $key, true ) );
 
 			$field = preg_replace( '/<span class="optional">.*?<\/span>/', '', $field );
 
