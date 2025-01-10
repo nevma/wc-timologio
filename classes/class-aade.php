@@ -5,6 +5,9 @@
  */
 namespace Nvm\Timologio;
 
+use Nvm\Timologio as Nvm_Timologio;
+
+
 /**
  * Prevent direct access to the file.
  */
@@ -33,8 +36,38 @@ class Aade {
 	public function register_hooks() {
 
 			add_action( 'wp_head', array( $this, 'vat_number_script' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'styles_and_scripts' ) );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
+	}
+
+	/**
+	 * Styles and scripts.
+	 *
+	 * @param string $hook_suffix
+	 */
+	public function styles_and_scripts( $hook_suffix ) {
+
+		$timologio = new Nvm_Timologio();
+
+		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+			wp_enqueue_script(
+				'nvm-vat-validation',
+				$timologio::$plugin_url . 'js/block-vat-validation.js',
+				array( 'wp-hooks', 'wp-element', 'wp-data', 'jquery' ),
+				$timologio::$plugin_version,
+				true
+			);
+
+			wp_localize_script(
+				'nvm-vat-validation',
+				'vat_ajax_object',
+				array(
+					'ajax_url'   => admin_url( 'admin-ajax.php' ),
+					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
+				)
+			);
+		}
 	}
 
 	public function vat_number_script() {

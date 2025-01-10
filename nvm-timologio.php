@@ -164,22 +164,6 @@ class Timologio {
 				self::$plugin_version,
 				true
 			);
-			wp_enqueue_script(
-				'nvm-vat-validation',
-				self::$plugin_url . '/js/block-vat-validation.js', // Adjust the path if needed
-				array( 'wp-hooks', 'wp-element', 'wp-data', 'jquery' ),
-				self::$plugin_version,
-				true
-			);
-
-			wp_localize_script(
-				'nvm-vat-validation',
-				'vat_ajax_object',
-				array(
-					'ajax_url'   => admin_url( 'admin-ajax.php' ),
-					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
-				)
-			);
 		}
 	}
 
