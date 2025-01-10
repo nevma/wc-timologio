@@ -18,9 +18,13 @@ jQuery(document).on("focusout", "#contact-nvm-billing_vat", function () {
 			},
 			success: function (response) {
 				if (response.success) {
-					jQuery("#contact-nvm-billing_irs").val(response.data.doy);
-					jQuery("#contact-nvm-billing_company").val(response.data.epwnymia);
-					jQuery("#contact-nvm-billing_activity").val(
+					nvm_updateField("#contact-nvm-billing_irs", response.data.doy);
+					nvm_updateField(
+						"#contact-nvm-billing_company",
+						response.data.epwnymia
+					);
+					nvm_updateField(
+						"#contact-nvm-billing_activity",
 						response.data.drastiriotita
 					);
 				} else {
@@ -30,3 +34,18 @@ jQuery(document).on("focusout", "#contact-nvm-billing_vat", function () {
 		});
 	}
 });
+
+/**
+ * Updates the field value and triggers input and change events.
+ *
+ * @param {string} selector - The jQuery selector for the input field.
+ * @param {string} value - The value to set in the input field.
+ */
+function nvm_updateField(selector, value) {
+	var $field = jQuery(selector);
+	$field
+		.val(value)
+		.attr("value", value)
+		.trigger("input") // Mimics typing in the input field
+		.trigger("change"); // Ensures change event listeners also fire
+}
