@@ -25,3 +25,33 @@ document.addEventListener("DOMContentLoaded", function () {
 		radio.addEventListener("change", updateDisplay)
 	);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+	function initInvoiceCheckbox() {
+		const invoiceCheckbox = document.querySelector(
+			"#contact-nvm-invoice_or_timologio"
+		);
+
+		if (invoiceCheckbox) {
+			function toggleInvoiceFields() {
+				const invoiceFields = document.querySelectorAll(
+					'[data-nvm*="timologio"]'
+				);
+				invoiceFields.forEach((field) => {
+					field.closest(".wc-block-components-text-input").style.display =
+						invoiceCheckbox.checked ? "block" : "none";
+				});
+			}
+
+			toggleInvoiceFields();
+			invoiceCheckbox.addEventListener("change", toggleInvoiceFields);
+		}
+	}
+
+	// Detect if the content loads dynamically
+	const observer = new MutationObserver(initInvoiceCheckbox);
+	observer.observe(document.body, { childList: true, subtree: true });
+
+	// Initial call in case content is already loaded
+	initInvoiceCheckbox();
+});

@@ -42,8 +42,13 @@ class Aade {
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
-				$('#billing_vat').on('blur', function() {
+				$('#billing_vat, #contact-nvm-billing_vat').on('focusout', function() {
 					var vatNumber = $(this).val();
+
+					var numericVat = vatNumber.replace(/\D/g, '');
+					if (numericVat.length < 7) {
+						return; // Stop the execution if the condition is not met
+					}
 
 					if (vatNumber) {
 						$.ajax({
@@ -63,6 +68,11 @@ class Aade {
 									$('#billing_country').val(response.data.country);
 									$('#billing_city').val(response.data.city);
 									$('#billing_postcode').val(response.data.postcode);
+
+									// $('#contact-nvm-billing_irs').val(response.data.doy);
+									// $('#contact-nvm-billing_company').val(response.data.epwnymia);
+									// $('#contact-nvm-billing_activity').val(response.data.drastiriotita);
+
 								} else {
 									alert('Invalid VAT number or unable to fetch details.');
 								}

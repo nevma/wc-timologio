@@ -148,21 +148,41 @@ class Timologio {
 	 * @param string $hook_suffix
 	 */
 	public function styles_and_scripts( $hook_suffix ) {
-		wp_enqueue_style(
-			'nvm-timologio',
-			self::$plugin_url . 'css/style.css',
-			array(),
-			self::$plugin_version
-		);
 
-		wp_enqueue_script(
-			'nvm-timologio',
-			self::$plugin_url . 'js/timologio.js',
-			array(),
-			self::$plugin_version,
-			true
-		);
+		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+			wp_enqueue_style(
+				'nvm-timologio',
+				self::$plugin_url . 'css/style.css',
+				array(),
+				self::$plugin_version
+			);
+
+			wp_enqueue_script(
+				'nvm-timologio',
+				self::$plugin_url . 'js/timologio.js',
+				array(),
+				self::$plugin_version,
+				true
+			);
+			wp_enqueue_script(
+				'nvm-vat-validation',
+				self::$plugin_url . '/js/block-vat-validation.js', // Adjust the path if needed
+				array( 'wp-hooks', 'wp-element', 'wp-data', 'jquery' ),
+				self::$plugin_version,
+				true
+			);
+
+			wp_localize_script(
+				'nvm-vat-validation',
+				'vat_ajax_object',
+				array(
+					'ajax_url'   => admin_url( 'admin-ajax.php' ),
+					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
+				)
+			);
+		}
 	}
+
 
 	/**
 	 * Autoload.

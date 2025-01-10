@@ -71,9 +71,15 @@ class Checkout {
 	 * @return void
 	 */
 	public function register_hooks() {
-		add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
+		// add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
 		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'order_show_timologio_fields' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_timologio_data' ) );
+
+		add_filter( 'woocommerce_checkout_fields', array( $this, 'customize_checkout_fields' ) );
+		add_action( 'woocommerce_checkout_process', array( $this, 'validate_timologio_fields' ) );
+		add_filter( 'woocommerce_form_field', array( $this, 'customize_form_field' ), 10, 4 );
+
+		add_action( 'woocommerce_init', array( $this, 'block_checkout' ) );
 	}
 
 	/**
@@ -82,9 +88,6 @@ class Checkout {
 	 * @return void
 	 */
 	public function initiate_checkout_actions() {
-		add_filter( 'woocommerce_checkout_fields', array( $this, 'customize_checkout_fields' ) );
-		add_action( 'woocommerce_checkout_process', array( $this, 'validate_timologio_fields' ) );
-		add_filter( 'woocommerce_form_field', array( $this, 'customize_form_field' ), 10, 4 );
 	}
 
 	/**
@@ -299,5 +302,71 @@ class Checkout {
 				}
 			}
 		}
+	}
+
+	public function block_checkout() {
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'         => 'nvm/invoice_or_timologio',
+				'label'      => __( 'Απόδειξη ή Τιμολόγιο', 'nevma' ),
+				'location'   => 'contact',
+				'type'       => 'checkbox',
+				'attributes' => array(
+					'data-nvm' => 'nvm-checkbox',
+				),
+			),
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'         => 'nvm/billing_vat',
+				'label'      => __( 'ΑΦΜ', 'nevma' ),
+				'location'   => 'contact',
+				'type'       => 'text',
+				'attributes' => array(
+					'data-nvm' => 'nvm-first-row timologio',
+				),
+				// 'required'   => true,
+			)
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'         => 'nvm/billing_irs',
+				'label'      => __( 'ΔΟΥ', 'nevma' ),
+				'location'   => 'contact',
+				'type'       => 'text',
+				'attributes' => array(
+					'data-nvm' => 'nvm-last-row timologio',
+				),
+				// 'required'   => true,
+			),
+		);
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'         => 'nvm/billing_company',
+				'label'      => __( 'Επωνυμία εταιρίας', 'nevma' ),
+				'location'   => 'contact',
+				'type'       => 'text',
+				'attributes' => array(
+					'data-nvm' => 'timologio',
+				),
+				// 'required'   => true,
+			),
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'         => 'nvm/billing_activity',
+				'label'      => __( 'Δραστηριότητα', 'nevma' ),
+				'location'   => 'contact',
+				'type'       => 'text',
+				'attributes' => array(
+					'data-nvm' => 'timologio',
+				),
+				// 'required'   => true,
+			),
+		);
 	}
 }
