@@ -126,7 +126,7 @@ class Timologio {
 	}
 
 	public static function aade() {
-
+		// Check if it is enabled and has any text
 		$enabled  = get_option( 'timologio_enable_feature' );
 		$username = get_option( 'timologio_aade_user' );
 		$password = get_option( 'timologio_aade_pass' );
@@ -139,8 +139,6 @@ class Timologio {
 	public static function settings() {
 		new Nvm_Settings();
 	}
-
-
 
 	/**
 	 * Styles and scripts.

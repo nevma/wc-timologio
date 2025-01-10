@@ -35,10 +35,18 @@ class Aade {
 	 */
 	public function register_hooks() {
 
-			add_action( 'wp_head', array( $this, 'vat_number_script' ) );
+			add_action( 'wp_head', array( $this, 'classic_vat_number_script' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'styles_and_scripts' ) );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
+	}
+
+	public function is_block_based_checkout() {
+		if ( function_exists( 'has_block' ) && function_exists( 'is_checkout' ) && is_checkout() ) {
+			return has_block( 'woocommerce/checkout' );
+		}
+
+		return false;
 	}
 
 	/**
@@ -50,7 +58,7 @@ class Aade {
 
 		$timologio = new Nvm_Timologio();
 
-		if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		if ( $this->is_block_based_checkout() ) {
 			wp_enqueue_script(
 				'nvm-vat-validation',
 				$timologio::$plugin_url . 'js/block-vat-validation.js',
@@ -64,58 +72,56 @@ class Aade {
 				'vat_ajax_object',
 				array(
 					'ajax_url'   => admin_url( 'admin-ajax.php' ),
-					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
+					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce', 'security' ),
 				)
 			);
 		}
 	}
 
-	public function vat_number_script() {
-		$ajax_nonce = wp_create_nonce( 'nvm_secure_nonce' );
-		?>
-		<script type="text/javascript">
-			jQuery(document).ready(function($) {
-				$('#billing_vat, #contact-nvm-billing_vat').on('focusout', function() {
-					var vatNumber = $(this).val();
+	public function classic_vat_number_script() {
+		if ( ! $this->is_block_based_checkout() ) {
 
-					var numericVat = vatNumber.replace(/\D/g, '');
-					if (numericVat.length < 7) {
-						return; // Stop the execution if the condition is not met
-					}
+			$ajax_nonce = wp_create_nonce( 'nvm_secure_nonce', 'security' );
+			?>
+			<script type="text/javascript">
+				jQuery(document).ready(function($) {
+					$('#billing_vat').on('focusout', function() {
+						var vatNumber = $(this).val();
 
-					if (vatNumber) {
-						$.ajax({
-							url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
-							type: 'POST',
-							data: {
-								action: 'fetch_vat_details',
-								vat_number: vatNumber,
-								security: '<?php echo esc_js( $ajax_nonce ); ?>'
-							},
-							success: function(response) {
-								if (response.success) {
-									$('#billing_irs').val(response.data.doy);
-									$('#billing_company').val(response.data.epwnymia);
-									$('#billing_activity').val(response.data.drastiriotita);
-									$('#billing_address_1').val(response.data.address);
-									$('#billing_country').val(response.data.country);
-									$('#billing_city').val(response.data.city);
-									$('#billing_postcode').val(response.data.postcode);
+						var numericVat = vatNumber.replace(/\D/g, '');
+						if (numericVat.length < 7) {
+							return; // Stop the execution if the condition is not met
+						}
 
-									// $('#contact-nvm-billing_irs').val(response.data.doy);
-									// $('#contact-nvm-billing_company').val(response.data.epwnymia);
-									// $('#contact-nvm-billing_activity').val(response.data.drastiriotita);
-
-								} else {
-									alert('Invalid VAT number or unable to fetch details.');
+						if (vatNumber) {
+							$.ajax({
+								url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
+								type: 'POST',
+								data: {
+									action: 'fetch_vat_details',
+									vat_number: vatNumber,
+									security: '<?php echo esc_js( $ajax_nonce ); ?>'
+								},
+								success: function(response) {
+									if (response.success) {
+										$('#billing_irs').val(response.data.doy);
+										$('#billing_company').val(response.data.epwnymia);
+										$('#billing_activity').val(response.data.drastiriotita);
+										$('#billing_address_1').val(response.data.address);
+										$('#billing_country').val(response.data.country);
+										$('#billing_city').val(response.data.city);
+										$('#billing_postcode').val(response.data.postcode);
+									} else {
+										alert('Invalid VAT number or unable to fetch details.');
+									}
 								}
-							}
-						});
-					}
+							});
+						}
+					});
 				});
-			});
-		</script>
-		<?php
+			</script>
+			<?php
+		}
 	}
 
 	function fetch_vat_details() {

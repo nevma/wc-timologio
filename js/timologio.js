@@ -6,15 +6,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// Function to update the display of .timologio elements
 	function updateDisplay() {
-		// Get the selected radio button's value
-		const selectedValue = document.querySelector(
+		// Get the selected radio button
+		const selectedRadio = document.querySelector(
 			'input[name="type_of_order"]:checked'
-		).value;
+		);
 
-		// Show or hide .timologio elements based on the selected value
-		document.querySelectorAll(".timologio").forEach((el) => {
-			el.style.display = selectedValue === "timologio" ? "block" : "none";
-		});
+		// Check if a radio button is selected
+		if (selectedRadio) {
+			const selectedValue = selectedRadio.value;
+
+			// Show or hide .timologio elements based on the selected value
+			document.querySelectorAll(".timologio").forEach((el) => {
+				el.style.display = selectedValue === "timologio" ? "block" : "none";
+			});
+		} else {
+			// If no radio button is selected, hide all .timologio elements
+			document.querySelectorAll(".timologio").forEach((el) => {
+				el.style.display = "none";
+			});
+		}
 	}
 
 	// Initial call to set the correct display on page load
