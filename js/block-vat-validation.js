@@ -45,7 +45,6 @@ function nvm_updateField(selector, value) {
 	var $field = jQuery(selector);
 	$field
 		.val(value)
-		.attr("value", value)
 		.trigger("input") // Mimics typing in the input field
 		.trigger("change"); // Ensures change event listeners also fire
 }

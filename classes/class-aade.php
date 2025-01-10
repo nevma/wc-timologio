@@ -59,13 +59,22 @@ class Aade {
 		$timologio = new Nvm_Timologio();
 
 		if ( $this->is_block_based_checkout() ) {
+
 			wp_enqueue_script(
-				'nvm-vat-validation',
-				$timologio::$plugin_url . 'js/block-vat-validation.js',
-				array( 'wp-hooks', 'wp-element', 'wp-data', 'jquery' ),
+				'nvm-checkout-interactivity',
+				$timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
+				array( 'wp-interactivity' ),
 				$timologio::$plugin_version,
 				true
 			);
+
+			// wp_enqueue_script(
+			// 'nvm-vat-validation',
+			// $timologio::$plugin_url . 'js/block-vat-validation.js',
+			// array( 'wp-hooks', 'wp-element', 'wp-data', 'jquery' ),
+			// $timologio::$plugin_version,
+			// true
+			// );
 
 			wp_localize_script(
 				'nvm-vat-validation',
@@ -77,6 +86,8 @@ class Aade {
 			);
 		}
 	}
+
+
 
 	public function classic_vat_number_script() {
 		if ( ! $this->is_block_based_checkout() ) {

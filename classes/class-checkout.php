@@ -325,7 +325,9 @@ class Checkout {
 				'location'   => 'contact',
 				'type'       => 'text',
 				'attributes' => array(
-					'data-nvm' => 'nvm-first-row timologio',
+					'data-nvm'         => 'nvm-first-row timologio',
+					'data-wp-bind'     => 'value: state.vatNumber',
+					'data-wp-on-input' => 'actions.updateVat',
 				),
 				// 'required'   => true,
 			)
@@ -338,7 +340,8 @@ class Checkout {
 				'location'   => 'contact',
 				'type'       => 'text',
 				'attributes' => array(
-					'data-nvm' => 'nvm-last-row timologio',
+					'data-nvm'     => 'nvm-last-row timologio',
+					'data-wp-bind' => 'value: state.companyName',
 				),
 				// 'required'   => true,
 			),
@@ -350,7 +353,9 @@ class Checkout {
 				'location'   => 'contact',
 				'type'       => 'text',
 				'attributes' => array(
-					'data-nvm' => 'timologio',
+					'data-nvm'     => 'timologio',
+					'data-wp-bind' => 'value: state.irsOffice',
+
 				),
 				// 'required'   => true,
 			),
@@ -363,7 +368,8 @@ class Checkout {
 				'location'   => 'contact',
 				'type'       => 'text',
 				'attributes' => array(
-					'data-nvm' => 'timologio',
+					'data-nvm'     => 'timologio',
+					'data-wp-bind' => 'value: state.businessActivity',
 				),
 				// 'required'   => true,
 			),

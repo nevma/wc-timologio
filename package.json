@@ -25,5 +25,8 @@
 		"grunt-contrib-watch": "^1.1.0",
 		"node-composer-runner": "^0.4.0",
 		"stylelint": "^16.12.0"
+	},
+	"dependencies": {
+		"@wordpress/interactivity": "^6.15.0"
 	}
 }
