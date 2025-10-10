@@ -37,6 +37,7 @@ class Aade {
 
 			add_action( 'wp_head', array( $this, 'classic_vat_number_script' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'styles_and_scripts' ) );
+			add_action( 'enqueue_block_assets', array( $this, 'block_styles_and_scripts' ) );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 	}
@@ -49,6 +50,18 @@ class Aade {
 		return false;
 	}
 
+	public function block_styles_and_scripts() {
+
+		$timologio = new Nvm_Timologio();
+
+		wp_enqueue_script(
+			'nvm-checkout-interactivity',
+			$timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
+			array( 'wp-interactivity' ),
+			$timologio::$plugin_version,
+			true
+		);
+	}
 	/**
 	 * Styles and scripts.
 	 *
@@ -56,25 +69,7 @@ class Aade {
 	 */
 	public function styles_and_scripts( $hook_suffix ) {
 
-		$timologio = new Nvm_Timologio();
-
 		if ( $this->is_block_based_checkout() ) {
-
-			wp_enqueue_script(
-				'nvm-checkout-interactivity',
-				$timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
-				array( 'wp-interactivity' ),
-				$timologio::$plugin_version,
-				true
-			);
-
-			// wp_enqueue_script(
-			// 'nvm-vat-validation',
-			// $timologio::$plugin_url . 'js/block-vat-validation.js',
-			// array( 'wp-hooks', 'wp-element', 'wp-data', 'jquery' ),
-			// $timologio::$plugin_version,
-			// true
-			// );
 
 			wp_localize_script(
 				'nvm-vat-validation',

@@ -1,6 +1,6 @@
-import { store, getContext, getElement } from "@wordpress/interactivity";
+const { store, getContext } = wp.interactivity;
 
-console.log("Running");
+console.log("Running Interactivity API"); // ✅ Debug check
 
 store("nvm-checkout", {
 	state: {
@@ -12,6 +12,9 @@ store("nvm-checkout", {
 	actions: {
 		updateVat({ event }) {
 			const vatValue = event.target.value;
+
+			// Debugging
+			console.log("VAT input detected:", vatValue);
 
 			// Update the state with VAT input
 			getContext().state.vatNumber = vatValue;
