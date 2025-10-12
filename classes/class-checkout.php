@@ -21,7 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /**
- * Class Checkout
+ * Manages WooCommerce checkout customization for Greek invoices and receipts.
+ *
+ * This class handles the display, validation, and storage of additional
+ * checkout fields required for Greek tax documentation (Timologio/Apodeixi).
+ * Supports both classic and block-based WooCommerce checkout experiences.
+ *
+ * @package Nvm\Timologio
+ * @since 1.0.0
  */
 class Checkout {
 
@@ -80,6 +87,8 @@ class Checkout {
 		add_filter( 'woocommerce_form_field', array( $this, 'customize_form_field' ), 10, 4 );
 
 		add_action( 'woocommerce_init', array( $this, 'block_checkout' ) );
+		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'save_block_checkout_fields' ), 10, 2 );
+		add_action( 'woocommerce_store_api_validate_add_to_cart', array( $this, 'validate_block_checkout_fields' ) );
 	}
 
 	/**
@@ -304,6 +313,79 @@ class Checkout {
 		}
 	}
 
+	/**
+	 * Validate block checkout fields.
+	 *
+	 * @param array $errors Array of errors.
+	 * @return void
+	 */
+	public function validate_block_checkout_fields( $errors ) {
+		// Get the checkout data from the request
+		$request_data = $_POST;
+
+		// Check if timologio is requested
+		if ( isset( $request_data['extensions']['nvm/invoice_or_timologio'] ) && $request_data['extensions']['nvm/invoice_or_timologio'] ) {
+			// Validate required fields
+			$required_fields = array(
+				'nvm/billing_vat'      => __( 'ΑΦΜ', 'nevma' ),
+				'nvm/billing_irs'      => __( 'ΔΟΥ', 'nevma' ),
+				'nvm/billing_company'  => __( 'Επωνυμία εταιρίας', 'nevma' ),
+				'nvm/billing_activity' => __( 'Δραστηριότητα', 'nevma' ),
+			);
+
+			foreach ( $required_fields as $field_key => $field_label ) {
+				if ( empty( $request_data['extensions'][ $field_key ] ) ) {
+					$errors->add(
+						'required_' . $field_key,
+						sprintf( __( 'Please fill in the %s field.', 'nevma' ), esc_html( $field_label ) )
+					);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Save block checkout fields to order meta.
+	 *
+	 * @param \WC_Order        $order   The order object.
+	 * @param \WP_REST_Request $request The request object.
+	 * @return void
+	 */
+	public function save_block_checkout_fields( $order, $request ) {
+		$data = $request->get_param( 'extensions' );
+
+		if ( empty( $data ) ) {
+			return;
+		}
+
+		// Save invoice or receipt type
+		if ( isset( $data['nvm/invoice_or_timologio'] ) ) {
+			$order->update_meta_data( 'invoice_or_timologio', $data['nvm/invoice_or_timologio'] ? 'timologio' : 'apodeixi' );
+		}
+
+		// Save timologio fields
+		$fields_to_save = array(
+			'nvm/billing_vat'      => 'billing_vat',
+			'nvm/billing_irs'      => 'billing_irs',
+			'nvm/billing_company'  => 'billing_company',
+			'nvm/billing_activity' => 'billing_activity',
+		);
+
+		foreach ( $fields_to_save as $field_key => $meta_key ) {
+			if ( isset( $data[ $field_key ] ) && ! empty( $data[ $field_key ] ) ) {
+				$order->update_meta_data( $meta_key, sanitize_text_field( $data[ $field_key ] ) );
+
+				// Save to user meta if user is logged in
+				$user_id = $order->get_user_id();
+				if ( $user_id ) {
+					update_user_meta( $user_id, $meta_key, sanitize_text_field( $data[ $field_key ] ) );
+				}
+			}
+		}
+
+		$order->save();
+	}
+
 	public function block_checkout() {
 
 		woocommerce_register_additional_checkout_field(
@@ -315,64 +397,67 @@ class Checkout {
 				'attributes' => array(
 					'data-nvm' => 'nvm-checkbox',
 				),
-			),
-		);
-
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'         => 'nvm/billing_vat',
-				'label'      => __( 'ΑΦΜ', 'nevma' ),
-				'location'   => 'contact',
-				'type'       => 'text',
-				'attributes' => array(
-					'data-nvm'         => 'nvm-first-row timologio',
-					'data-wp-bind'     => 'value: state.vatNumber',
-					'data-wp-on-input' => 'actions.updateVat',
-				),
-				// 'required'   => true,
 			)
 		);
 
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'         => 'nvm/billing_irs',
-				'label'      => __( 'ΔΟΥ', 'nevma' ),
-				'location'   => 'contact',
-				'type'       => 'text',
-				'attributes' => array(
-					'data-nvm'     => 'nvm-last-row timologio',
-					'data-wp-bind' => 'value: state.companyName',
+				'id'            => 'nvm/billing_vat',
+				'label'         => __( 'ΑΦΜ', 'nevma' ),
+				'location'      => 'contact',
+				'type'          => 'text',
+				'attributes'    => array(
+					'data-nvm'            => 'nvm-first-row timologio',
+					'data-wp-interactive' => 'nvm-checkout',
+					'data-wp-on--focusout' => 'actions.updateVat',
 				),
-				// 'required'   => true,
-			),
-		);
-		woocommerce_register_additional_checkout_field(
-			array(
-				'id'         => 'nvm/billing_company',
-				'label'      => __( 'Επωνυμία εταιρίας', 'nevma' ),
-				'location'   => 'contact',
-				'type'       => 'text',
-				'attributes' => array(
-					'data-nvm'     => 'timologio',
-					'data-wp-bind' => 'value: state.irsOffice',
-
-				),
-				// 'required'   => true,
-			),
+				'show_in_order' => true,
+			)
 		);
 
 		woocommerce_register_additional_checkout_field(
 			array(
-				'id'         => 'nvm/billing_activity',
-				'label'      => __( 'Δραστηριότητα', 'nevma' ),
-				'location'   => 'contact',
-				'type'       => 'text',
-				'attributes' => array(
-					'data-nvm'     => 'timologio',
-					'data-wp-bind' => 'value: state.businessActivity',
+				'id'            => 'nvm/billing_irs',
+				'label'         => __( 'ΔΟΥ', 'nevma' ),
+				'location'      => 'contact',
+				'type'          => 'text',
+				'attributes'    => array(
+					'data-nvm'            => 'nvm-last-row timologio',
+					'data-wp-interactive' => 'nvm-checkout',
+					'data-wp-bind--value' => 'state.irsOffice',
 				),
-				// 'required'   => true,
-			),
+				'show_in_order' => true,
+			)
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'            => 'nvm/billing_company',
+				'label'         => __( 'Επωνυμία εταιρίας', 'nevma' ),
+				'location'      => 'contact',
+				'type'          => 'text',
+				'attributes'    => array(
+					'data-nvm'            => 'timologio',
+					'data-wp-interactive' => 'nvm-checkout',
+					'data-wp-bind--value' => 'state.companyName',
+				),
+				'show_in_order' => true,
+			)
+		);
+
+		woocommerce_register_additional_checkout_field(
+			array(
+				'id'            => 'nvm/billing_activity',
+				'label'         => __( 'Δραστηριότητα', 'nevma' ),
+				'location'      => 'contact',
+				'type'          => 'text',
+				'attributes'    => array(
+					'data-nvm'            => 'timologio',
+					'data-wp-interactive' => 'nvm-checkout',
+					'data-wp-bind--value' => 'state.businessActivity',
+				),
+				'show_in_order' => true,
+			)
 		);
 	}
 }

@@ -23,6 +23,8 @@ use Nvm\Timologio\Checkout as Nvm_Checkout;
 use Nvm\Timologio\Aade as Nvm_Aade;
 use Nvm\Timologio\Settings as Nvm_Settings;
 
+
+
 use Nvm\Timologio\Vies as Nvm_Vies;
 
 
@@ -35,7 +37,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Donor.
+ * Main plugin class for WooCommerce Timologio integration.
+ *
+ * This class handles the core plugin initialization, autoloading,
+ * and orchestration of checkout customization, VAT validation,
+ * and settings management for Greek tax compliance.
+ *
+ * @package Nvm\Timologio
+ * @since 1.0.0
  */
 class Timologio {
 	/**

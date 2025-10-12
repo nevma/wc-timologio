@@ -1,4 +1,48 @@
+/* Classic checkout - Radio buttons inline */
 #type_of_order_field .woocommerce-input-wrapper label,
 #type_of_order_field .woocommerce-input-wrapper input {
 	display: inline-block;
+}
+
+/* Block checkout - Initially hide timologio field containers */
+.wc-block-components-text-input:has([data-nvm*="timologio"]) {
+	display: none;
+}
+
+/* Show when checkbox is checked (handled by JS) */
+
+/* Auto-filled fields styling */
+#contact-nvm-billing_irs,
+#contact-nvm-billing_company,
+#contact-nvm-billing_activity {
+	background-color: #f5f5f5;
+}
+
+/* Ensure proper spacing for block checkout fields */
+.wc-block-components-text-input:has([data-nvm*="timologio"]) {
+	margin-bottom: 1rem;
+}
+
+/* Layout for first and last row fields - inline display */
+.wc-block-checkout__contact-fields {
+	display: grid;
+	gap: 1rem;
+}
+
+/* Make VAT and IRS fields display inline */
+.wc-block-components-text-input:has([data-nvm*="nvm-first-row"]),
+.wc-block-components-text-input:has([data-nvm*="nvm-last-row"]) {
+	display: inline-block;
+	width: calc(50% - 0.5rem);
+	vertical-align: top;
+}
+
+/* First row field - align left */
+.wc-block-components-text-input:has([data-nvm*="nvm-first-row"]) {
+	margin-right: 0.5rem;
+}
+
+/* Last row field - align right */
+.wc-block-components-text-input:has([data-nvm*="nvm-last-row"]) {
+	margin-left: 0.5rem;
 }

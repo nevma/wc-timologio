@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
 	// Select all radio buttons with the name 'type_of_order'
 	const orderTypeRadios = document.querySelectorAll(
 		'input[name="type_of_order"]'
@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			const selectedValue = selectedRadio.value;
 
 			// Show or hide .timologio elements based on the selected value
-			document.querySelectorAll(".timologio").forEach((el) => {
-				el.style.display = selectedValue === "timologio" ? "block" : "none";
+			document.querySelectorAll('.timologio').forEach((el) => {
+				el.style.display = selectedValue === 'timologio' ? 'block' : 'none';
 			});
 		} else {
 			// If no radio button is selected, hide all .timologio elements
-			document.querySelectorAll(".timologio").forEach((el) => {
-				el.style.display = "none";
+			document.querySelectorAll('.timologio').forEach((el) => {
+				el.style.display = 'none';
 			});
 		}
 	}
@@ -32,14 +32,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// Add event listeners to each radio button to detect changes
 	orderTypeRadios.forEach((radio) =>
-		radio.addEventListener("change", updateDisplay)
+		radio.addEventListener('change', updateDisplay)
 	);
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener('DOMContentLoaded', function () {
 	function initInvoiceCheckbox() {
 		const invoiceCheckbox = document.querySelector(
-			"#contact-nvm-invoice_or_timologio"
+			'#contact-nvm-invoice_or_timologio'
 		);
 
 		if (invoiceCheckbox) {
@@ -48,13 +48,43 @@ document.addEventListener("DOMContentLoaded", function () {
 					'[data-nvm*="timologio"]'
 				);
 				invoiceFields.forEach((field) => {
-					field.closest(".wc-block-components-text-input").style.display =
-						invoiceCheckbox.checked ? "block" : "none";
+					const container = field.closest('.wc-block-components-text-input');
+					if (container) {
+						container.style.display = invoiceCheckbox.checked
+							? 'block'
+							: 'none';
+					}
+				});
+
+				// Also handle the first row and last row fields
+				const firstRowFields = document.querySelectorAll(
+					'[data-nvm*="nvm-first-row"]'
+				);
+				const lastRowFields = document.querySelectorAll(
+					'[data-nvm*="nvm-last-row"]'
+				);
+
+				firstRowFields.forEach((field) => {
+					const container = field.closest('.wc-block-components-text-input');
+					if (container) {
+						container.style.display = invoiceCheckbox.checked
+							? 'block'
+							: 'none';
+					}
+				});
+
+				lastRowFields.forEach((field) => {
+					const container = field.closest('.wc-block-components-text-input');
+					if (container) {
+						container.style.display = invoiceCheckbox.checked
+							? 'block'
+							: 'none';
+					}
 				});
 			}
 
 			toggleInvoiceFields();
-			invoiceCheckbox.addEventListener("change", toggleInvoiceFields);
+			invoiceCheckbox.addEventListener('change', toggleInvoiceFields);
 		}
 	}
 
