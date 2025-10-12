@@ -1,0 +1,19 @@
+/* Classic checkout - Radio buttons inline */
+#type_of_order_field .woocommerce-input-wrapper label,
+#type_of_order_field .woocommerce-input-wrapper input {
+	display: inline-block;
+}
+
+/* Block checkout - Initially hide timologio fields */
+[data-nvm*="timologio"] {
+	display: none;
+}
+
+/* Show when checkbox is checked (handled by JS) */
+
+/* Auto-filled fields styling */
+#contact-nvm-billing_irs,
+#contact-nvm-billing_company,
+#contact-nvm-billing_activity {
+	background-color: #f5f5f5;
+}

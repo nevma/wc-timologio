@@ -1,6 +1,7 @@
 module.exports = function (grunt) {
 	var BUILD_DIR = "build/",
 		CSS_DIR = "css/",
+		JS_DIR = "js/",
 		PHP_DIR = "classes/",
 		VENDOR_DIR = "prefixed/vendor/";
 
@@ -8,6 +9,7 @@ module.exports = function (grunt) {
 		pkg: grunt.file.readJSON("package.json"),
 		clean: {
 			all: BUILD_DIR,
+			zipfile: "*.zip",
 		},
 		watch: {
 			options: {
@@ -23,7 +25,7 @@ module.exports = function (grunt) {
 		},
 		copy: {
 			plugin: {
-				src: "<%= pkg.name %>.php",
+				src: "nvm-timologio.php",
 				dest: BUILD_DIR + "<%= pkg.name %>/",
 			},
 			css: {
@@ -31,6 +33,12 @@ module.exports = function (grunt) {
 				cwd: CSS_DIR,
 				src: "**",
 				dest: BUILD_DIR + "<%= pkg.name %>/" + CSS_DIR,
+			},
+			js: {
+				expand: true,
+				cwd: JS_DIR,
+				src: "**",
+				dest: BUILD_DIR + "<%= pkg.name %>/" + JS_DIR,
 			},
 			php: {
 				expand: true,
@@ -65,7 +73,7 @@ module.exports = function (grunt) {
 			main: {
 				options: {
 					mode: "zip",
-					archive: BUILD_DIR + "<%= pkg.name %>.zip",
+					archive: "<%= pkg.name %>.zip",
 				},
 				expand: true,
 				cwd: BUILD_DIR + "<%= pkg.name %>/",
@@ -84,6 +92,8 @@ module.exports = function (grunt) {
 		"clean:all",
 		"copy:plugin",
 		"copy:php",
+		"copy:css",
+		"copy:js",
 		"copy:autoload",
 		"copy:composer",
 	]);
