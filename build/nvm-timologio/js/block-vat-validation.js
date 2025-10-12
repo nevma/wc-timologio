@@ -1,34 +1,34 @@
 // Trigger AJAX Call After VAT Validation
-jQuery(document).on("focusout", "#contact-nvm-billing_vat", function () {
+jQuery(document).on('focusout', '#contact-nvm-billing_vat', function () {
 	var vatNumber = jQuery(this).val();
 
 	if (vatNumber) {
-		var numericVat = vatNumber.replace(/\D/g, "");
+		var numericVat = vatNumber.replace(/\D/g, '');
 		if (numericVat.length < 8) {
 			return;
 		}
 
 		jQuery.ajax({
 			url: vat_ajax_object.ajax_url,
-			type: "POST",
+			type: 'POST',
 			data: {
-				action: "fetch_vat_details",
+				action: 'fetch_vat_details',
 				vat_number: vatNumber,
 				security: vat_ajax_object.ajax_nonce,
 			},
 			success: function (response) {
 				if (response.success) {
-					nvm_updateField("#contact-nvm-billing_irs", response.data.doy);
+					nvm_updateField('#contact-nvm-billing_irs', response.data.doy);
 					nvm_updateField(
-						"#contact-nvm-billing_company",
+						'#contact-nvm-billing_company',
 						response.data.epwnymia
 					);
 					nvm_updateField(
-						"#contact-nvm-billing_activity",
+						'#contact-nvm-billing_activity',
 						response.data.drastiriotita
 					);
 				} else {
-					alert("Invalid VAT number or unable to fetch details.");
+					alert('Invalid VAT number or unable to fetch details.');
 				}
 			},
 		});
@@ -45,6 +45,6 @@ function nvm_updateField(selector, value) {
 	var $field = jQuery(selector);
 	$field
 		.val(value)
-		.trigger("input") // Mimics typing in the input field
-		.trigger("change"); // Ensures change event listeners also fire
+		.trigger('input') // Mimics typing in the input field
+		.trigger('change'); // Ensures change event listeners also fire
 }

@@ -21,7 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 /**
- * Class Checkout
+ * Manages WooCommerce checkout customization for Greek invoices and receipts.
+ *
+ * This class handles the display, validation, and storage of additional
+ * checkout fields required for Greek tax documentation (Timologio/Apodeixi).
+ * Supports both classic and block-based WooCommerce checkout experiences.
+ *
+ * @package Nvm\Timologio
+ * @since 1.0.0
  */
 class Checkout {
 

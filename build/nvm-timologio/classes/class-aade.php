@@ -16,12 +16,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class adae
+ * Handles AADE (Greek Tax Authority) VAT validation and data retrieval.
+ *
+ * This class provides functionality to validate Greek VAT numbers against
+ * the AADE SOAP API and automatically populate company information including
+ * tax office, company name, business activity, and address details.
+ *
+ * @package Nvm\Timologio
+ * @since 1.0.0
  */
 class Aade {
 
 	/**
 	 * Constructor.
+	 *
+	 * Initializes the AADE class and registers WordPress hooks.
 	 */
 	public function __construct() {
 
@@ -42,6 +51,11 @@ class Aade {
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 	}
 
+	/**
+	 * Checks if the current checkout page is using WooCommerce blocks.
+	 *
+	 * @return bool True if block-based checkout, false otherwise.
+	 */
 	public function is_block_based_checkout() {
 		if ( function_exists( 'has_block' ) && function_exists( 'is_checkout' ) && is_checkout() ) {
 			return has_block( 'woocommerce/checkout' );
@@ -50,6 +64,14 @@ class Aade {
 		return false;
 	}
 
+	/**
+	 * Enqueues scripts and styles for block-based checkout.
+	 *
+	 * Loads the WordPress Interactivity API script for handling VAT validation
+	 * in the WooCommerce block-based checkout.
+	 *
+	 * @return void
+	 */
 	public function block_styles_and_scripts() {
 
 		$timologio = new Nvm_Timologio();
@@ -140,6 +162,14 @@ class Aade {
 		}
 	}
 
+	/**
+	 * AJAX handler to fetch VAT details from AADE.
+	 *
+	 * Validates the provided VAT number against AADE and returns
+	 * company information including tax office, name, activity, and address.
+	 *
+	 * @return void Sends JSON response and terminates.
+	 */
 	function fetch_vat_details() {
 
 		check_ajax_referer( 'nvm_secure_nonce', 'security' );
@@ -174,6 +204,15 @@ class Aade {
 		wp_die();
 	}
 
+	/**
+	 * Extracts firm activity descriptions from AADE XML response.
+	 *
+	 * Parses the XML response and retrieves all business activity descriptions
+	 * associated with the validated VAT number.
+	 *
+	 * @param string $xmlResponse The XML response from AADE API.
+	 * @return array|null Array of activity descriptions or null if not found.
+	 */
 	function get_aade_firm_act_descr( $xmlResponse ) {
 
 		// Load the XML string into a SimpleXMLElement object
@@ -203,13 +242,12 @@ class Aade {
 	}
 
 	/**
-	 * Retrieve a specific element's value from an AADE XML response .
+	 * Retrieve a specific element's value from an AADE XML response.
 	 *
-	 * @param string $xmlResponse The XML response as a string .
-	 * @param string $elementName The name of the element to retrieve .
-	 *
-	 * @return string | null The value of the specified element or null if not found .
-	 * */
+	 * @param string $xmlResponse The XML response as a string.
+	 * @param string $elementName The name of the element to retrieve.
+	 * @return string|null The value of the specified element or null if not found.
+	 */
 	public function get_aade_element( $xmlResponse, $elementName ) {
 
 		// Load the XML string into a SimpleXMLElement object
@@ -236,6 +274,16 @@ class Aade {
 		return null;
 	}
 
+	/**
+	 * Validates a Greek VAT number against the AADE API.
+	 *
+	 * Performs a SOAP request to the Greek tax authority (AADE) to validate
+	 * a VAT number and retrieve company details. Results are cached for 1 hour.
+	 *
+	 * @param string      $vat_id The VAT number to validate.
+	 * @param string|null $country Optional country code (not used for AADE).
+	 * @return string|false XML response from AADE or false on error.
+	 */
 	public function check_for_valid_vat_aade( $vat_id, $country = null ) {
 		$transient_key = "{$vat_id}_nvm_aade_check";
 		$result        = delete_transient( $transient_key );

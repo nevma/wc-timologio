@@ -1,7 +1,7 @@
-[![Latest Stable Version](https://poser.pugx.org/phpcompatibility/phpcompatibility-paragonie/v/stable.png)](https://packagist.org/packages/phpcompatibility/phpcompatibility-paragonie)
-[![Latest Unstable Version](https://poser.pugx.org/phpcompatibility/phpcompatibility-paragonie/v/unstable.png)](https://packagist.org/packages/phpcompatibility/phpcompatibility-paragonie)
-[![License](https://poser.pugx.org/phpcompatibility/phpcompatibility-paragonie/license.png)](https://github.com/PHPCompatibility/PHPCompatibilityParagonie/blob/master/LICENSE)
-[![Build Status](https://github.com/PHPCompatibility/PHPCompatibilityParagonie/workflows/CI/badge.svg?branch=master)](https://github.com/PHPCompatibility/PHPCompatibilityParagonie/actions)
+[![Latest Stable Version](https://img.shields.io/packagist/v/phpcompatibility/phpcompatibility-paragonie?label=stable)](https://packagist.org/packages/phpcompatibility/phpcompatibility-paragonie)
+[![Latest Unstable Version](https://img.shields.io/badge/unstable-dev--develop-e68718.svg?maxAge=2419200)](https://packagist.org/packages/phpcompatibility/phpcompatibility-paragonie)
+[![License](https://img.shields.io/github/license/PHPCompatibility/PHPCompatibilityParagonie?color=00a7a7)](https://github.com/PHPCompatibility/PHPCompatibilityParagonie/blob/master/LICENSE)
+[![Build Status](https://github.com/PHPCompatibility/PHPCompatibilityParagonie/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/PHPCompatibility/PHPCompatibilityParagonie/actions/workflows/ci.yml)
 
 # PHPCompatibilityParagonie
 
@@ -97,6 +97,12 @@ All code within the PHPCompatibility organisation is released under the GNU Less
 
 ## Changelog
 
+### 1.3.4 - 2025-09-19
+
+* Prevent a new false positive when the ruleset is run over the code of the latest 1.x version of the `sodium_compat` polyfill itself.
+* Rulesets now annotate which schema they comply with.
+* Other housekeeping and minor documentation updates.
+
 ### 1.3.3 - 2024-04-25
 
 * Prevent a new false positive when the ruleset is run over the code of the latest 1.x version of the `sodium_compat` polyfill itself.
@@ -105,16 +111,16 @@ All code within the PHPCompatibility organisation is released under the GNU Less
 
 ### 1.3.2 - 2022-10-25
 
-- README: Updated the installation instructions for [compatibility with Composer >= 2.2][composer22announce].
-- Composer: The package will now identify itself as a static analysis tool. Thanks [@GaryJones]!
-- Other housekeeping and minor documentation updates.
+* README: Updated the installation instructions for [compatibility with Composer >= 2.2][composer22announce].
+* Composer: The package will now identify itself as a static analysis tool. Thanks [@GaryJones]!
+* Other housekeeping and minor documentation updates.
 
 [composer22announce]: https://blog.packagist.com/composer-2-2/#more-secure-plugin-execution
 
 ### 1.3.1 - 2021-02-15
 
-- The recommended version of the [Composer PHPCS plugin] is now `^0.7.0`, which offers compatibility with Composer 2.0.
-- The rulesets are now also tested against PHP 7.4 and 8.0.
+* The recommended version of the [Composer PHPCS plugin] is now `^0.7.0`, which offers compatibility with Composer 2.0.
+* The rulesets are now also tested against PHP 7.4 and 8.0.
     Note: full PHP 7.4 support is only available in combination with PHP_CodeSniffer >= 3.5.6.
     Note: runtime PHP 8.0 support is only available in combination with PHP_CodeSniffer >= 3.5.7, full support is expected in PHP_CodeSniffer 3.6.0.
 

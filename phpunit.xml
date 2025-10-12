@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	colors="true"
+	verbose="true"
+	stopOnFailure="false"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutTodoAnnotatedTests="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true">
+
+	<testsuites>
+		<testsuite name="Unit Tests">
+			<directory suffix="Test.php">./tests/Unit</directory>
+		</testsuite>
+	</testsuites>
+
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">./classes</directory>
+		</include>
+		<exclude>
+			<directory>./prefixed</directory>
+			<directory>./tests</directory>
+		</exclude>
+		<report>
+			<html outputDirectory="coverage"/>
+			<text outputFile="php://stdout" showOnlySummary="true"/>
+		</report>
+	</coverage>
+
+	<php>
+		<const name="PHPUNIT_RUNNING" value="true"/>
+		<ini name="error_reporting" value="32767"/>
+		<ini name="display_errors" value="1"/>
+		<ini name="display_startup_errors" value="1"/>
+	</php>
+</phpunit>

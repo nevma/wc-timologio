@@ -13,7 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Settings
+ * Manages plugin settings and WooCommerce integration.
+ *
+ * This class adds a custom settings tab to WooCommerce where administrators
+ * can configure AADE credentials and enable/disable automatic VAT validation.
+ *
+ * @package Nvm\Timologio
+ * @since 1.0.0
  */
 class Settings {
 

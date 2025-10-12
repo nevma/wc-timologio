@@ -13,7 +13,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Class Vies
+ * Handles EU VAT validation through VIES (VAT Information Exchange System).
+ *
+ * This class provides functionality to validate European Union VAT numbers
+ * using the VIES SOAP service for cross-border VAT validation.
+ *
+ * @package Nvm\Timologio
+ * @since 1.0.0
  */
 class Vies {
 

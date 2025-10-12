@@ -18,3 +18,8 @@ auth.json
 #remove zip file
 nvm-timologio.zip
 node_modules
+
+# PHPUnit and test artifacts
+/coverage/
+.phpunit.result.cache
+phpunit.xml.dist
