@@ -46,7 +46,6 @@ class Aade {
 
 			add_action( 'wp_head', array( $this, 'classic_vat_number_script' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_checkout_scripts' ), 20 );
-			add_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_after', array( $this, 'enqueue_block_interactivity' ) );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 	}
@@ -81,50 +80,6 @@ class Aade {
 
 		return false;
 	}
-
-	/**
-	 * Enqueues scripts for checkout pages.
-	 *
-	 * @return void
-	 */
-	public function enqueue_checkout_scripts() {
-		// Only load on checkout page
-		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
-			return;
-		}
-
-		// Note: Block checkout scripts are enqueued via woocommerce_blocks_enqueue_checkout_block_scripts_after hook
-	}
-
-	/**
-	 * Enqueues interactivity script specifically for block-based checkout.
-	 * This hook only fires when WooCommerce blocks checkout is actually rendering.
-	 *
-	 * @return void
-	 */
-	public function enqueue_block_interactivity() {
-		$timologio = new Nvm_Timologio();
-
-		wp_enqueue_script(
-			'nvm-checkout-interactivity',
-			$timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
-			array( 'wp-interactivity' ),
-			$timologio::$plugin_version,
-			true
-		);
-
-		// Localize script for AJAX
-		wp_localize_script(
-			'nvm-checkout-interactivity',
-			'nvmCheckoutData',
-			array(
-				'ajax_url'   => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
-			)
-		);
-	}
-
-
 
 	public function classic_vat_number_script() {
 		if ( ! $this->is_block_based_checkout() ) {

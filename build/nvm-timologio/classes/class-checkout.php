@@ -89,6 +89,7 @@ class Checkout {
 		add_action( 'woocommerce_init', array( $this, 'block_checkout' ) );
 		add_action( 'woocommerce_store_api_checkout_update_order_from_request', array( $this, 'save_block_checkout_fields' ), 10, 2 );
 		add_action( 'woocommerce_store_api_validate_add_to_cart', array( $this, 'validate_block_checkout_fields' ) );
+		add_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_after', array( $this, 'enqueue_block_interactivity' ) );
 	}
 
 	/**
@@ -97,6 +98,25 @@ class Checkout {
 	 * @return void
 	 */
 	public function initiate_checkout_actions() {
+	}
+
+	/**
+	 * Enqueues interactivity script for block-based checkout.
+	 *
+	 * This hook fires when WooCommerce blocks checkout is rendering.
+	 * Enqueues the WordPress Interactivity API script for handling
+	 * dynamic field interactions on the checkout page.
+	 *
+	 * @return void
+	 */
+	public function enqueue_block_interactivity() {
+		wp_enqueue_script(
+			'nvm-checkout-interactivity',
+			\Nvm\Timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
+			array( 'wp-interactivity' ),
+			\Nvm\Timologio::$plugin_version,
+			true
+		);
 	}
 
 	/**
