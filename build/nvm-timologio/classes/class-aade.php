@@ -57,6 +57,7 @@ class Aade {
 	 * @return bool True if block-based checkout, false otherwise.
 	 */
 	public function is_block_based_checkout() {
+
 		if ( function_exists( 'has_block' ) && function_exists( 'is_checkout' ) && is_checkout() ) {
 			return has_block( 'woocommerce/checkout' );
 		}

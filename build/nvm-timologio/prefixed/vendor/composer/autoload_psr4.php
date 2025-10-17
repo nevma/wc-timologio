@@ -7,5 +7,4 @@ $baseDir = dirname(dirname($vendorDir));
 
 return array(
     'Nvm\\Timologio\\' => array($baseDir . '/classes'),
-    'Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => array($vendorDir . '/dealerdirect/phpcodesniffer-composer-installer/src'),
 );

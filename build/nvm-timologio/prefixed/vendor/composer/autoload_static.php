@@ -11,10 +11,6 @@ class ComposerStaticInit7449e0995152c9c4bb23ef03ecc48dfc
         array (
             'Nvm\\Timologio\\' => 14,
         ),
-        'D' => 
-        array (
-            'Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 55,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -22,15 +18,10 @@ class ComposerStaticInit7449e0995152c9c4bb23ef03ecc48dfc
         array (
             0 => __DIR__ . '/../../..' . '/classes',
         ),
-        'Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/dealerdirect/phpcodesniffer-composer-installer/src',
-        ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Dealerdirect\\Composer\\Plugin\\Installers\\PHPCodeSniffer\\Plugin' => __DIR__ . '/..' . '/dealerdirect/phpcodesniffer-composer-installer/src/Plugin.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

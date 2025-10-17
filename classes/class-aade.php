@@ -45,8 +45,7 @@ class Aade {
 	public function register_hooks() {
 
 			add_action( 'wp_head', array( $this, 'classic_vat_number_script' ) );
-			add_action( 'wp_enqueue_scripts', array( $this, 'styles_and_scripts' ) );
-			add_action( 'enqueue_block_assets', array( $this, 'block_styles_and_scripts' ) );
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_checkout_scripts' ) );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 	}
@@ -57,58 +56,61 @@ class Aade {
 	 * @return bool True if block-based checkout, false otherwise.
 	 */
 	public function is_block_based_checkout() {
-		if ( function_exists( 'has_block' ) && function_exists( 'is_checkout' ) && is_checkout() ) {
-			return has_block( 'woocommerce/checkout' );
+		// Early return if not on checkout page
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+			return false;
+		}
+
+		// Check if using WooCommerce block checkout
+		if ( function_exists( 'has_block' ) ) {
+			global $post;
+
+			// Try to get the checkout page ID
+			$checkout_page_id = wc_get_page_id( 'checkout' );
+
+			if ( $checkout_page_id && $checkout_page_id > 0 ) {
+				return has_block( 'woocommerce/checkout', $checkout_page_id );
+			}
+
+			// Fallback: check current post
+			if ( $post instanceof \WP_Post ) {
+				return has_block( 'woocommerce/checkout', $post );
+			}
 		}
 
 		return false;
 	}
 
 	/**
-	 * Enqueues scripts and styles for block-based checkout.
-	 *
-	 * Loads the WordPress Interactivity API script for handling VAT validation
-	 * in the WooCommerce block-based checkout.
+	 * Enqueues scripts for checkout pages (both classic and block-based).
 	 *
 	 * @return void
 	 */
-	public function block_styles_and_scripts() {
+	public function enqueue_checkout_scripts() {
+		// Only load on checkout page
+		if ( ! function_exists( 'is_checkout' ) || ! is_checkout() ) {
+			return;
+		}
 
-		$timologio = new Nvm_Timologio();
-
-		wp_enqueue_script(
-			'nvm-checkout-interactivity',
-			$timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
-			array( 'wp-interactivity' ),
-			$timologio::$plugin_version,
-			true
-		);
-
-		// Localize script for AJAX
-		wp_localize_script(
-			'nvm-checkout-interactivity',
-			'nvmCheckoutData',
-			array(
-				'ajax_url'   => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
-			)
-		);
-	}
-	/**
-	 * Styles and scripts.
-	 *
-	 * @param string $hook_suffix
-	 */
-	public function styles_and_scripts( $hook_suffix ) {
-
+		// Check if using block-based checkout
 		if ( $this->is_block_based_checkout() ) {
+			$timologio = new Nvm_Timologio();
 
+			wp_enqueue_script(
+				'nvm-checkout-interactivity',
+				$timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
+				array( 'wp-interactivity' ),
+				$timologio::$plugin_version,
+				true
+			);
+
+			// Localize script for AJAX
 			wp_localize_script(
-				'nvm-vat-validation',
-				'vat_ajax_object',
+				'nvm-checkout-interactivity',
+				'nvmCheckoutData',
 				array(
 					'ajax_url'   => admin_url( 'admin-ajax.php' ),
-					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce', 'security' ),
+					'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
 				)
 			);
 		}
