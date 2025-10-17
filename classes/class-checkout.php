@@ -78,7 +78,6 @@ class Checkout {
 	 * @return void
 	 */
 	public function register_hooks() {
-		// add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
 		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'order_show_timologio_fields' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_timologio_data' ) );
 
@@ -92,13 +91,6 @@ class Checkout {
 		add_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_after', array( $this, 'enqueue_block_interactivity' ) );
 	}
 
-	/**
-	 * Initialize actions for the checkout page.
-	 *
-	 * @return void
-	 */
-	public function initiate_checkout_actions() {
-	}
 
 	/**
 	 * Enqueues interactivity script for block-based checkout.
@@ -110,12 +102,23 @@ class Checkout {
 	 * @return void
 	 */
 	public function enqueue_block_interactivity() {
+		// Enqueue the script without strict dependency to avoid blocking
 		wp_enqueue_script(
 			'nvm-checkout-interactivity',
 			\Nvm\Timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
-			array( 'wp-interactivity' ),
+			array(),
 			\Nvm\Timologio::$plugin_version,
 			true
+		);
+
+		// Localize script for AJAX
+		wp_localize_script(
+			'nvm-checkout-interactivity',
+			'nvmCheckoutData',
+			array(
+				'ajax_url'   => admin_url( 'admin-ajax.php' ),
+				'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
+			)
 		);
 	}
 
