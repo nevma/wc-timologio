@@ -102,22 +102,20 @@ class Checkout {
 	 * @return void
 	 */
 	public function enqueue_block_interactivity() {
-		// Enqueue the script without strict dependency to avoid blocking
-		wp_enqueue_script(
+		// Enqueue as a script module with Interactivity API dependency
+		wp_enqueue_script_module(
 			'nvm-checkout-interactivity',
 			\Nvm\Timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
-			array(),
-			\Nvm\Timologio::$plugin_version,
-			true
+			array( '@wordpress/interactivity' ),
+			\Nvm\Timologio::$plugin_version
 		);
 
-		// Localize script for AJAX
-		wp_localize_script(
-			'nvm-checkout-interactivity',
-			'nvmCheckoutData',
+		// Pass AJAX data using Interactivity API state
+		wp_interactivity_state(
+			'nvm-checkout',
 			array(
-				'ajax_url'   => admin_url( 'admin-ajax.php' ),
-				'ajax_nonce' => wp_create_nonce( 'nvm_secure_nonce' ),
+				'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+				'ajaxNonce' => wp_create_nonce( 'nvm_secure_nonce' ),
 			)
 		);
 	}

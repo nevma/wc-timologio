@@ -1,4 +1,4 @@
-const { store, getContext } = wp.interactivity;
+import { store, getContext } from '@wordpress/interactivity';
 
 store('nvm-checkout', {
 	state: {
@@ -7,37 +7,40 @@ store('nvm-checkout', {
 		irsOffice: '',
 		businessActivity: '',
 		isLoading: false,
+		ajaxUrl: '',
+		ajaxNonce: '',
 	},
 	actions: {
 		*updateVat({ event }) {
 			const context = getContext();
+			const state = context.state;
 			const vatValue = event.target.value;
 
 			// Update the state with VAT input
-			context.state.vatNumber = vatValue;
+			state.vatNumber = vatValue;
 
 			// Remove non-numeric characters for validation
 			const numericVat = vatValue.replace(/\D/g, '');
 
 			// Only proceed if VAT has at least 8 digits
 			if (numericVat.length < 8) {
-				context.state.companyName = '';
-				context.state.irsOffice = '';
-				context.state.businessActivity = '';
+				state.companyName = '';
+				state.irsOffice = '';
+				state.businessActivity = '';
 				return;
 			}
 
 			// Set loading state
-			context.state.isLoading = true;
+			state.isLoading = true;
 
 			try {
 				// Make AJAX request to fetch VAT details
 				const formData = new FormData();
 				formData.append('action', 'fetch_vat_details');
 				formData.append('vat_number', vatValue);
-				formData.append('security', nvmCheckoutData.ajax_nonce);
+				formData.append('security', state.ajaxNonce);
 
-				const response = yield fetch(nvmCheckoutData.ajax_url, {
+				const response = yield fetch(state.ajaxUrl, {
 					method: 'POST',
 					body: formData,
 				});
@@ -46,14 +49,14 @@ store('nvm-checkout', {
 
 				if (data.success) {
 					// Update state with fetched data
-					context.state.companyName = data.data.epwnymia || '';
-					context.state.irsOffice = data.data.doy || '';
+					state.companyName = data.data.epwnymia || '';
+					state.irsOffice = data.data.doy || '';
 
 					// Handle activity (can be array or string)
 					if (Array.isArray(data.data.drastiriotita)) {
-						context.state.businessActivity = data.data.drastiriotita.join(', ');
+						state.businessActivity = data.data.drastiriotita.join(', ');
 					} else {
-						context.state.businessActivity = data.data.drastiriotita || '';
+						state.businessActivity = data.data.drastiriotita || '';
 					}
 
 					// Update address fields as well
@@ -85,18 +88,18 @@ store('nvm-checkout', {
 				} else {
 					console.error('Invalid VAT number or unable to fetch details.');
 					// Clear fields on error
-					context.state.companyName = '';
-					context.state.irsOffice = '';
-					context.state.businessActivity = '';
+					state.companyName = '';
+					state.irsOffice = '';
+					state.businessActivity = '';
 				}
 			} catch (error) {
 				console.error('Error fetching VAT details:', error);
 				// Clear fields on error
-				context.state.companyName = '';
-				context.state.irsOffice = '';
-				context.state.businessActivity = '';
+				state.companyName = '';
+				state.irsOffice = '';
+				state.businessActivity = '';
 			} finally {
-				context.state.isLoading = false;
+				state.isLoading = false;
 			}
 		},
 	},
