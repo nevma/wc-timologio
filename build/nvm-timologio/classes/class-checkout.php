@@ -78,7 +78,6 @@ class Checkout {
 	 * @return void
 	 */
 	public function register_hooks() {
-		// add_action( 'template_redirect', array( $this, 'initiate_checkout_actions' ) );
 		add_action( 'woocommerce_admin_order_data_after_billing_address', array( $this, 'order_show_timologio_fields' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'save_timologio_data' ) );
 
@@ -92,13 +91,6 @@ class Checkout {
 		add_action( 'woocommerce_blocks_enqueue_checkout_block_scripts_after', array( $this, 'enqueue_block_interactivity' ) );
 	}
 
-	/**
-	 * Initialize actions for the checkout page.
-	 *
-	 * @return void
-	 */
-	public function initiate_checkout_actions() {
-	}
 
 	/**
 	 * Enqueues interactivity script for block-based checkout.
@@ -110,10 +102,11 @@ class Checkout {
 	 * @return void
 	 */
 	public function enqueue_block_interactivity() {
-		// Enqueue the script without strict dependency to avoid blocking
+		// Use simple fallback script without Interactivity API dependency
+		// This ensures compatibility across all WordPress versions
 		wp_enqueue_script(
-			'nvm-checkout-interactivity',
-			\Nvm\Timologio::$plugin_url . 'js/nvm-checkout-interactivity.js',
+			'nvm-checkout-fallback',
+			\Nvm\Timologio::$plugin_url . 'js/nvm-checkout-fallback.js',
 			array(),
 			\Nvm\Timologio::$plugin_version,
 			true
@@ -121,7 +114,7 @@ class Checkout {
 
 		// Localize script for AJAX
 		wp_localize_script(
-			'nvm-checkout-interactivity',
+			'nvm-checkout-fallback',
 			'nvmCheckoutData',
 			array(
 				'ajax_url'   => admin_url( 'admin-ajax.php' ),
@@ -439,8 +432,6 @@ class Checkout {
 				'type'          => 'text',
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-first-row timologio',
-					'data-wp-interactive' => 'nvm-checkout',
-					'data-wp-on--focusout' => 'actions.updateVat',
 				),
 				'show_in_order' => true,
 			)
@@ -454,8 +445,6 @@ class Checkout {
 				'type'          => 'text',
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-last-row timologio',
-					'data-wp-interactive' => 'nvm-checkout',
-					'data-wp-bind--value' => 'state.irsOffice',
 				),
 				'show_in_order' => true,
 			)
@@ -469,8 +458,6 @@ class Checkout {
 				'type'          => 'text',
 				'attributes'    => array(
 					'data-nvm'            => 'timologio',
-					'data-wp-interactive' => 'nvm-checkout',
-					'data-wp-bind--value' => 'state.companyName',
 				),
 				'show_in_order' => true,
 			)
@@ -484,8 +471,6 @@ class Checkout {
 				'type'          => 'text',
 				'attributes'    => array(
 					'data-nvm'            => 'timologio',
-					'data-wp-interactive' => 'nvm-checkout',
-					'data-wp-bind--value' => 'state.businessActivity',
 				),
 				'show_in_order' => true,
 			)

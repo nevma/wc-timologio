@@ -1,0 +1,147 @@
+// Fallback VAT lookup for when Interactivity API is not available
+(function () {
+	'use strict';
+
+	// Wait for DOM to be ready
+	function initVatLookup() {
+		const vatInput = document.getElementById('contact-nvm-billing_vat');
+
+		if (!vatInput) {
+			// Try again after a short delay (for dynamic content)
+			setTimeout(initVatLookup, 500);
+			return;
+		}
+
+		console.log('NVM VAT Lookup: Initialized (fallback mode)');
+
+		vatInput.addEventListener('focusout', function () {
+			const vatValue = this.value;
+			const numericVat = vatValue.replace(/\D/g, '');
+
+			// Only proceed if VAT has at least 8 digits
+			if (numericVat.length < 8) {
+				return;
+			}
+
+			console.log('NVM VAT Lookup: Fetching details for VAT:', vatValue);
+
+			// Get AJAX data
+			const ajaxUrl = typeof nvmCheckoutData !== 'undefined' ? nvmCheckoutData.ajax_url : '';
+			const ajaxNonce = typeof nvmCheckoutData !== 'undefined' ? nvmCheckoutData.ajax_nonce : '';
+
+			if (!ajaxUrl || !ajaxNonce) {
+				console.error('NVM VAT Lookup: AJAX URL or nonce not available');
+				return;
+			}
+
+			// Make AJAX request
+			const formData = new FormData();
+			formData.append('action', 'fetch_vat_details');
+			formData.append('vat_number', vatValue);
+			formData.append('security', ajaxNonce);
+
+			fetch(ajaxUrl, {
+				method: 'POST',
+				body: formData,
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						console.log('NVM VAT Lookup: Success', data.data);
+
+						// Helper function to find and update field
+						function updateField(selectors, value) {
+							if (!value) return;
+
+							for (const selector of selectors) {
+								const input = document.querySelector(selector);
+								if (input) {
+									input.value = value;
+									input.dispatchEvent(new Event('input', { bubbles: true }));
+									input.dispatchEvent(new Event('change', { bubbles: true }));
+									console.log('NVM VAT Lookup: Updated field', selector, 'with value:', value);
+									return true;
+								}
+							}
+							console.warn('NVM VAT Lookup: Could not find field for selectors:', selectors);
+							return false;
+						}
+
+						// Update company name field
+						updateField(
+							[
+								'#contact-nvm-billing_company',
+								'input[id*="billing_company"]',
+								'input[name*="billing_company"]'
+							],
+							data.data.epwnymia
+						);
+
+						// Update IRS/DOY field
+						updateField(
+							[
+								'#contact-nvm-billing_irs',
+								'input[id*="billing_irs"]',
+								'input[name*="billing_irs"]'
+							],
+							data.data.doy
+						);
+
+						// Update activity field
+						const activity = Array.isArray(data.data.drastiriotita)
+							? data.data.drastiriotita.join(', ')
+							: data.data.drastiriotita;
+						updateField(
+							[
+								'#contact-nvm-billing_activity',
+								'input[id*="billing_activity"]',
+								'input[name*="billing_activity"]'
+							],
+							activity
+						);
+
+						// Update address fields
+						const addressInput = document.querySelector('input[name="billing_address_1"]');
+						if (addressInput && data.data.address) {
+							addressInput.value = data.data.address;
+							addressInput.dispatchEvent(new Event('input', { bubbles: true }));
+							addressInput.dispatchEvent(new Event('change', { bubbles: true }));
+						}
+
+						const cityInput = document.querySelector('input[name="city"]');
+						if (cityInput && data.data.city) {
+							cityInput.value = data.data.city;
+							cityInput.dispatchEvent(new Event('input', { bubbles: true }));
+							cityInput.dispatchEvent(new Event('change', { bubbles: true }));
+						}
+
+						const postcodeInput = document.querySelector('input[name="postcode"]');
+						if (postcodeInput && data.data.postcode) {
+							postcodeInput.value = data.data.postcode;
+							postcodeInput.dispatchEvent(new Event('input', { bubbles: true }));
+							postcodeInput.dispatchEvent(new Event('change', { bubbles: true }));
+						}
+
+						const countryInput = document.querySelector('select[name="country"]');
+						if (countryInput && data.data.country) {
+							countryInput.value = data.data.country;
+							countryInput.dispatchEvent(new Event('input', { bubbles: true }));
+							countryInput.dispatchEvent(new Event('change', { bubbles: true }));
+						}
+					} else {
+						console.error('NVM VAT Lookup: Invalid VAT number or unable to fetch details');
+					}
+				})
+				.catch(error => {
+					console.error('NVM VAT Lookup: Error fetching VAT details:', error);
+				});
+		});
+	}
+
+	// Initialize when DOM is ready
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initVatLookup);
+	} else {
+		initVatLookup();
+	}
+})();

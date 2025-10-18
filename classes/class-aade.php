@@ -45,7 +45,6 @@ class Aade {
 	public function register_hooks() {
 
 			add_action( 'wp_head', array( $this, 'classic_vat_number_script' ) );
-			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_checkout_scripts' ), 20 );
 			add_action( 'wp_ajax_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 			add_action( 'wp_ajax_nopriv_fetch_vat_details', array( $this, 'fetch_vat_details' ) );
 	}

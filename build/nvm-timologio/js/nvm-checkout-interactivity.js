@@ -1,59 +1,79 @@
-const { store, getContext } = wp.interactivity;
+// WordPress Interactivity API integration for VAT lookup
+(function () {
+	// Wait for wp.interactivity to be available
+	if (typeof wp === 'undefined' || typeof wp.interactivity === 'undefined') {
+		console.error('WordPress Interactivity API is not available');
+		return;
+	}
 
-store('nvm-checkout', {
-	state: {
-		vatNumber: '',
-		companyName: '',
-		irsOffice: '',
-		businessActivity: '',
-		isLoading: false,
-	},
-	actions: {
-		*updateVat({ event }) {
-			const context = getContext();
-			const vatValue = event.target.value;
+	const { store, getContext } = wp.interactivity;
 
-			// Update the state with VAT input
-			context.state.vatNumber = vatValue;
+	store('nvm-checkout', {
+		state: {
+			vatNumber: '',
+			companyName: '',
+			irsOffice: '',
+			businessActivity: '',
+			isLoading: false,
+			ajaxUrl: '',
+			ajaxNonce: '',
+		},
+		actions: {
+			*updateVat({ event }) {
+				const context = getContext();
+				const state = context.state;
+				const vatValue = event.target.value;
 
-			// Remove non-numeric characters for validation
-			const numericVat = vatValue.replace(/\D/g, '');
+				// Update the state with VAT input
+				state.vatNumber = vatValue;
 
-			// Only proceed if VAT has at least 8 digits
-			if (numericVat.length < 8) {
-				context.state.companyName = '';
-				context.state.irsOffice = '';
-				context.state.businessActivity = '';
-				return;
-			}
+				// Remove non-numeric characters for validation
+				const numericVat = vatValue.replace(/\D/g, '');
 
-			// Set loading state
-			context.state.isLoading = true;
+				// Only proceed if VAT has at least 8 digits
+				if (numericVat.length < 8) {
+					state.companyName = '';
+					state.irsOffice = '';
+					state.businessActivity = '';
+					return;
+				}
 
-			try {
-				// Make AJAX request to fetch VAT details
-				const formData = new FormData();
-				formData.append('action', 'fetch_vat_details');
-				formData.append('vat_number', vatValue);
-				formData.append('security', nvmCheckoutData.ajax_nonce);
+				// Set loading state
+				state.isLoading = true;
 
-				const response = yield fetch(nvmCheckoutData.ajax_url, {
-					method: 'POST',
-					body: formData,
-				});
+				try {
+					// Get AJAX URL and nonce from state or fallback to localized data
+					const ajaxUrl = state.ajaxUrl || (typeof nvmCheckoutData !== 'undefined' ? nvmCheckoutData.ajax_url : '');
+					const ajaxNonce = state.ajaxNonce || (typeof nvmCheckoutData !== 'undefined' ? nvmCheckoutData.ajax_nonce : '');
 
-				const data = yield response.json();
+					if (!ajaxUrl || !ajaxNonce) {
+						console.error('AJAX URL or nonce not available');
+						return;
+					}
+
+					// Make AJAX request to fetch VAT details
+					const formData = new FormData();
+					formData.append('action', 'fetch_vat_details');
+					formData.append('vat_number', vatValue);
+					formData.append('security', ajaxNonce);
+
+					const response = yield fetch(ajaxUrl, {
+						method: 'POST',
+						body: formData,
+					});
+
+					const data = yield response.json();
 
 				if (data.success) {
 					// Update state with fetched data
-					context.state.companyName = data.data.epwnymia || '';
-					context.state.irsOffice = data.data.doy || '';
+					state.companyName = data.data.epwnymia || '';
+					state.irsOffice = data.data.doy || '';
 
 					// Handle activity (can be array or string)
 					if (Array.isArray(data.data.drastiriotita)) {
-						context.state.businessActivity = data.data.drastiriotita.join(', ');
+						state.businessActivity = data.data.drastiriotita.join(', ');
 					} else {
-						context.state.businessActivity = data.data.drastiriotita || '';
+						state.businessActivity = data.data.drastiriotita || '';
 					}
 
 					// Update address fields as well
@@ -85,19 +105,20 @@ store('nvm-checkout', {
 				} else {
 					console.error('Invalid VAT number or unable to fetch details.');
 					// Clear fields on error
-					context.state.companyName = '';
-					context.state.irsOffice = '';
-					context.state.businessActivity = '';
+					state.companyName = '';
+					state.irsOffice = '';
+					state.businessActivity = '';
 				}
 			} catch (error) {
 				console.error('Error fetching VAT details:', error);
 				// Clear fields on error
-				context.state.companyName = '';
-				context.state.irsOffice = '';
-				context.state.businessActivity = '';
+				state.companyName = '';
+				state.irsOffice = '';
+				state.businessActivity = '';
 			} finally {
-				context.state.isLoading = false;
+				state.isLoading = false;
 			}
 		},
 	},
-});
+	});
+})();
