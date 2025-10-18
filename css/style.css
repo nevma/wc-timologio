@@ -32,7 +32,7 @@
 /* Make VAT and IRS fields display inline */
 .wc-block-components-text-input:has([data-nvm*="nvm-first-row"]),
 .wc-block-components-text-input:has([data-nvm*="nvm-last-row"]) {
-	display: inline-block;
+	display: inline-block !important;
 	width: calc(50% - 0.5rem);
 	vertical-align: top;
 }
