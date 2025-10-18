@@ -2,6 +2,22 @@
 (function () {
 	'use strict';
 
+	// Helper to set input value for React/WooCommerce blocks
+	function setReactValue(element, value) {
+		const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+			window.HTMLInputElement.prototype,
+			'value'
+		).set;
+		nativeInputValueSetter.call(element, value);
+
+		// Trigger all events that React/WooCommerce might listen to
+		const events = ['input', 'change', 'blur'];
+		events.forEach(eventType => {
+			const event = new Event(eventType, { bubbles: true });
+			element.dispatchEvent(event);
+		});
+	}
+
 	// Wait for DOM to be ready
 	function initVatLookup() {
 		const vatInput = document.getElementById('contact-nvm-billing_vat');
@@ -56,9 +72,8 @@
 							for (const selector of selectors) {
 								const input = document.querySelector(selector);
 								if (input) {
-									input.value = value;
-									input.dispatchEvent(new Event('input', { bubbles: true }));
-									input.dispatchEvent(new Event('change', { bubbles: true }));
+									// Use setReactValue to properly update React-controlled inputs
+									setReactValue(input, value);
 									console.log('NVM VAT Lookup: Updated field', selector, 'with value:', value);
 									return true;
 								}
@@ -100,33 +115,32 @@
 							activity
 						);
 
-						// Update address fields
+						// Update address fields using setReactValue
 						const addressInput = document.querySelector('input[name="billing_address_1"]');
 						if (addressInput && data.data.address) {
-							addressInput.value = data.data.address;
-							addressInput.dispatchEvent(new Event('input', { bubbles: true }));
-							addressInput.dispatchEvent(new Event('change', { bubbles: true }));
+							setReactValue(addressInput, data.data.address);
+							console.log('NVM VAT Lookup: Updated address field');
 						}
 
 						const cityInput = document.querySelector('input[name="city"]');
 						if (cityInput && data.data.city) {
-							cityInput.value = data.data.city;
-							cityInput.dispatchEvent(new Event('input', { bubbles: true }));
-							cityInput.dispatchEvent(new Event('change', { bubbles: true }));
+							setReactValue(cityInput, data.data.city);
+							console.log('NVM VAT Lookup: Updated city field');
 						}
 
 						const postcodeInput = document.querySelector('input[name="postcode"]');
 						if (postcodeInput && data.data.postcode) {
-							postcodeInput.value = data.data.postcode;
-							postcodeInput.dispatchEvent(new Event('input', { bubbles: true }));
-							postcodeInput.dispatchEvent(new Event('change', { bubbles: true }));
+							setReactValue(postcodeInput, data.data.postcode);
+							console.log('NVM VAT Lookup: Updated postcode field');
 						}
 
 						const countryInput = document.querySelector('select[name="country"]');
 						if (countryInput && data.data.country) {
+							// For select elements, standard approach should work
 							countryInput.value = data.data.country;
-							countryInput.dispatchEvent(new Event('input', { bubbles: true }));
 							countryInput.dispatchEvent(new Event('change', { bubbles: true }));
+							countryInput.dispatchEvent(new Event('input', { bubbles: true }));
+							console.log('NVM VAT Lookup: Updated country field');
 						}
 					} else {
 						console.error('NVM VAT Lookup: Invalid VAT number or unable to fetch details');

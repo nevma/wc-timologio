@@ -430,6 +430,7 @@ class Checkout {
 				'label'         => __( 'ΑΦΜ', 'nevma' ),
 				'location'      => 'contact',
 				'type'          => 'text',
+				'optionalLabel' => '',
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-first-row timologio',
 				),
@@ -443,6 +444,7 @@ class Checkout {
 				'label'         => __( 'ΔΟΥ', 'nevma' ),
 				'location'      => 'contact',
 				'type'          => 'text',
+				'optionalLabel' => '',
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-last-row timologio',
 				),
@@ -457,6 +459,7 @@ class Checkout {
 				'location'      => 'contact',
 				'type'          => 'text',
 				'attributes'    => array(
+				'optionalLabel' => '',
 					'data-nvm'            => 'timologio',
 				),
 				'show_in_order' => true,
@@ -471,6 +474,7 @@ class Checkout {
 				'type'          => 'text',
 				'attributes'    => array(
 					'data-nvm'            => 'timologio',
+				'optionalLabel' => '',
 				),
 				'show_in_order' => true,
 			)
