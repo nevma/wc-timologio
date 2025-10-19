@@ -150,8 +150,11 @@ class Aade {
 		// Route to AADE or VIES based on VAT type
 		if ( $vat_type === 'vies' ) {
 			// EU VAT validation via VIES
+			// Extract just the number part (remove country code if present)
+			$vat_number_only = preg_replace( '/^[A-Z]{2}/', '', $vat_number );
+
 			$vies     = new Vies();
-			$response = $vies->nvm_get_vat_details_vies( $vat_number, $country );
+			$response = $vies->nvm_get_vat_details_vies( $vat_number_only, $country );
 
 			if ( is_array( $response ) && $response['valid'] ) {
 				wp_send_json_success(
