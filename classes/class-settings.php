@@ -59,6 +59,40 @@ class Settings {
 	 */
 	public function output_settings() {
 		woocommerce_admin_fields( $this->get_settings() );
+
+		// Inline admin script to toggle AADE fields when the source changes.
+		// Keeps logic close to where the fields render.
+		?>
+		<script type="text/javascript">
+			( function( $ ) {
+				function nvm_toggle_timologio_fields() {
+					var source = $( '#timologio_source' ).val();
+
+					// Field row IDs come from option 'id' values.
+					var $aadeRows = $(
+						'#timologio_aade_title,' +
+						'#timologio_aade_user,' +
+						'#timologio_aade_pass'
+					);
+
+					if ( 'aade' === source ) {
+						$aadeRows.show();
+					} else {
+						$aadeRows.hide();
+					}
+				}
+
+				$( document ).on( 'change', '#timologio_source', nvm_toggle_timologio_fields );
+				$( document ).ready( nvm_toggle_timologio_fields );
+			} )( jQuery );
+		</script>
+		<style>
+			/* Optional: smoothens hide/show to avoid layout jump. */
+			#timologio_aade_title,
+			#timologio_aade_user,
+			#timologio_aade_pass { transition: all .12s ease-in-out; }
+		</style>
+		<?php
 	}
 
 	/**
@@ -82,13 +116,21 @@ class Settings {
 				'type'  => 'title',
 				'id'    => 'timologio_settings',
 			),
+
+			// Single select to choose the data source.
 			array(
-				'title'   => __( 'Enable autocomplete from Aade', 'nevma' ),
-				'desc'    => __( 'Check this box to enable the feature.', 'nevma' ),
-				'id'      => 'timologio_enable_feature',
-				'type'    => 'checkbox', // Defines the field as a checkbox.
-				'default' => 'no', // Default value: 'yes' or 'no'.
+				'title'   => __( 'Autocomplete Source', 'nevma' ),
+				'desc'    => __( 'Choose where to fetch company info from.', 'nevma' ),
+				'id'      => 'timologio_source',
+				'type'    => 'select',
+				'default' => 'vies',
+				'options' => array(
+					'none' => __( 'None', 'nevma' ),
+					'vies' => __( 'VIES (EU VAT)', 'nevma' ),
+					'timologio_enable_feature' => __( 'AADE (Greece)', 'nevma' ),
+				),
 			),
+			// --- AADE-only fields (hidden unless source === 'aade') ---
 			array(
 				'title'   => __( 'Username Aade', 'nevma' ),
 				'desc'    => __( 'Please enter the username', 'nevma' ),
