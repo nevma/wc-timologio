@@ -30,11 +30,14 @@
 }
 
 /* Make VAT and IRS fields display inline */
-.wc-block-components-text-input:has([data-nvm*="nvm-first-row"]),
-.wc-block-components-text-input:has([data-nvm*="nvm-last-row"]) {
-	display: inline-block !important;
-	width: calc(50% - 0.5rem);
+.wc-block-components-address-form__nvm-billing_vat,
+.wc-block-components-address-form__nvm-billing_irs {
+	width: 49%;
+	float: left;
 	vertical-align: top;
+}
+.wc-block-components-address-form__nvm-billing_company {
+	clear: both;
 }
 
 /* First row field - align left */

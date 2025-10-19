@@ -418,6 +418,7 @@ class Checkout {
 				'label'      => __( 'Απόδειξη ή Τιμολόγιο', 'nevma' ),
 				'location'   => 'contact',
 				'type'       => 'checkbox',
+				'optionalLabel' => __( 'Απόδειξη ή Τιμολόγιο', 'nevma' ),
 				'attributes' => array(
 					'data-nvm' => 'nvm-checkbox',
 				),
@@ -430,9 +431,10 @@ class Checkout {
 				'label'         => __( 'ΑΦΜ', 'nevma' ),
 				'location'      => 'contact',
 				'type'          => 'text',
-				'optionalLabel' => '',
+				'optionalLabel' => __( 'ΑΦΜ', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-first-row timologio',
+					'class'               => 'nvm-vat-field',
 				),
 				'show_in_order' => true,
 			)
@@ -444,9 +446,10 @@ class Checkout {
 				'label'         => __( 'ΔΟΥ', 'nevma' ),
 				'location'      => 'contact',
 				'type'          => 'text',
-				'optionalLabel' => '',
+				'optionalLabel' => __( 'ΔΟΥ', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-last-row timologio',
+					'class'               => 'nvm-irs-field',
 				),
 				'show_in_order' => true,
 			)
@@ -458,9 +461,10 @@ class Checkout {
 				'label'         => __( 'Επωνυμία εταιρίας', 'nevma' ),
 				'location'      => 'contact',
 				'type'          => 'text',
+				'optionalLabel' =>  __( 'Επωνυμία εταιρίας', 'nevma' ),
 				'attributes'    => array(
-				'optionalLabel' => '',
 					'data-nvm'            => 'timologio',
+					'class'               => 'nvm-company-field',
 				),
 				'show_in_order' => true,
 			)
@@ -472,9 +476,10 @@ class Checkout {
 				'label'         => __( 'Δραστηριότητα', 'nevma' ),
 				'location'      => 'contact',
 				'type'          => 'text',
+				'optionalLabel' => __( 'Δραστηριότητα', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'timologio',
-				'optionalLabel' => '',
+					'class'               => 'nvm-activity-field',
 				),
 				'show_in_order' => true,
 			)
