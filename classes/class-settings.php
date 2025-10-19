@@ -130,6 +130,15 @@ class Settings {
 					'timologio_enable_feature' => __( 'AADE (Greece)', 'nevma' ),
 				),
 			),
+
+			array(
+				'title'   => __( '', 'nevma' ),
+				'desc'    => __( 'Please enter the username', 'nevma' ),
+				'id'      => 'timologio_vies_user',
+				'type'    => 'text',
+				'default' => '',
+			),
+
 			// --- AADE-only fields (hidden unless source === 'aade') ---
 			array(
 				'title'   => __( 'Username Aade', 'nevma' ),
