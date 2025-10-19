@@ -18,6 +18,33 @@
 		});
 	}
 
+	// Show success/error message below VAT input
+	function showMessage(container, message, type) {
+		// Remove any existing messages
+		const existingMessage = container.querySelector('.nvm-vat-message');
+		if (existingMessage) {
+			existingMessage.remove();
+		}
+
+		// Create new message element
+		const messageEl = document.createElement('div');
+		messageEl.className = `nvm-vat-message ${type}`;
+		messageEl.textContent = message;
+
+		// Insert after the input container
+		container.parentNode.insertBefore(messageEl, container.nextSibling);
+
+		// Auto-dismiss after 5 seconds
+		setTimeout(() => {
+			messageEl.classList.add('fade-out');
+			setTimeout(() => {
+				if (messageEl.parentNode) {
+					messageEl.remove();
+				}
+			}, 500); // Match fade-out animation duration
+		}, 5000);
+	}
+
 	// Detect VAT type: AADE (Greek) or VIES (EU)
 	function detectVatType(vat) {
 		const cleaned = vat.trim().toUpperCase();
@@ -101,6 +128,14 @@
 				return;
 			}
 
+			// Find the parent container for the loading spinner
+			const inputContainer = vatInput.closest('.wc-block-components-text-input');
+
+			// Add loading class to show spinner
+			if (inputContainer) {
+				inputContainer.classList.add('nvm-vat-loading');
+			}
+
 			// Make AJAX request
 			const formData = new FormData();
 			formData.append("action", "fetch_vat_details");
@@ -115,6 +150,11 @@
 			})
 				.then((response) => response.json())
 				.then((data) => {
+					// Remove loading class
+					if (inputContainer) {
+						inputContainer.classList.remove('nvm-vat-loading');
+					}
+
 					if (data.success) {
 						// Helper function to find and update field
 						function updateField(selectors, value) {
@@ -199,11 +239,36 @@
 							countryInput.dispatchEvent(new Event("input", { bubbles: true }));
 							
 						}
-					} else {
+
+					// Show success message
+					if (inputContainer) {
+						const companyName = data.data.epwnymia || '';
+						const successMsg = companyName
+							? `Επιτυχής επαλήθευση ΑΦΜ: ${companyName}`
+							: 'Το ΑΦΜ επαληθεύτηκε επιτυχώς';
+						showMessage(inputContainer, successMsg, 'success');
 					}
-				})
-				.catch((error) => {
-				});
+				} else {
+					// Show error message
+					if (inputContainer) {
+						const errorMsg = data.data && data.data.message
+							? data.data.message
+							: 'Μη έγκυρο ΑΦΜ ή αδυναμία ανάκτησης στοιχείων';
+						showMessage(inputContainer, errorMsg, 'error');
+					}
+				}
+			})
+			.catch((error) => {
+				// Remove loading class on error
+				if (inputContainer) {
+					inputContainer.classList.remove('nvm-vat-loading');
+				}
+
+				// Show error message for network/fetch errors
+				if (inputContainer) {
+					showMessage(inputContainer, 'Σφάλμα σύνδεσης. Παρακαλώ δοκιμάστε ξανά.', 'error');
+				}
+			});
 		});
 	}
 

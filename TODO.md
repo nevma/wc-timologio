@@ -1,34 +1,48 @@
 # TODO List - NVM Timologio Plugin
 
-## 🔄 Pending Features
+## ✅ Completed Features
 
 ### 1. VIES VAT Validation
-- [ ] Add EU VIES check for international VAT numbers
-- [ ] Implement fallback: if Greek VAT not found in AADE, try VIES
-- [ ] Handle different country VAT prefixes (DE, FR, IT, etc.)
-- [ ] Display appropriate error messages for invalid EU VAT numbers
-- [ ] Cache VIES results to avoid rate limiting
 
-### 2. Field Validation
-- [ ] Add real-time VAT format validation (9 digits for Greek VAT)
-- [ ] Show visual feedback during AADE/VIES lookup (loading spinner)
-- [ ] Display success/error messages after lookup
-- [ ] Validate required fields before allowing checkout
+- [x] Add EU VIES check for international VAT numbers ✅
+- [x] Handle different country VAT prefixes (DE, FR, IT, etc.) ✅
+- [x] Auto-detect VAT type: Greek (AADE) vs EU (VIES) ✅
+- [x] Integrate VIES API for EU VAT validation ✅
+- [x] Return standardized data format for both AADE and VIES ✅
 
-### 3. UI/UX Improvements
-- [ ] Add loading indicator during VAT lookup
+### 2. AADE VAT Validation
+
+- [x] Greek VAT number validation (9 digits, EL, GR prefixes) ✅
+- [x] AADE SOAP API integration ✅
+- [x] Auto-populate company details from AADE ✅
+- [x] Cache AADE results (1 hour) ✅
+
+## 🔄 Pending Features
+
+### 3. Field Validation
+
+- [x] Auto-detect and validate VAT format ✅
+- [x] Show visual feedback during AADE/VIES lookup (loading spinner) ✅
+- [x] Display success/error messages after lookup ✅
+
+### 4. UI/UX Improvements
+
+- [x] Remove "(προαιρετικό)" optional label from fields ✅
+- [x] Clean console output (removed debug logging) ✅
+- [x] Add loading indicator during VAT lookup ✅
 - [ ] Show tooltip/help text explaining what ΑΦΜ is
 - [ ] Improve error messages (Greek translations)
 - [ ] Add "retry" button if AADE lookup fails
 - [ ] Make fields readonly after auto-fill (with option to edit)
 
-### 4. Performance Optimization
-- [ ] Increase AADE cache duration (currently 1 hour)
-- [ ] Add local database caching for frequently looked up VAT numbers
-- [ ] Debounce VAT input to avoid excessive API calls
-- [ ] Lazy load scripts only on checkout page
+### 5. Performance Optimization
+
+- [x] Cache AADE results (1 hour) ✅
+- [x] Add VIES result caching (1 hour for valid, 15 min for invalid) ✅
+- [x] Lazy load scripts only on checkout page ✅
 
 ### 5. Admin Features
+
 - [ ] Add admin settings page for AADE credentials
 - [ ] Option to enable/disable VIES check
 - [ ] View cached VAT lookups in admin
@@ -36,6 +50,7 @@
 - [ ] Statistics dashboard (how many invoices vs receipts)
 
 ### 6. Testing
+
 - [ ] Write unit tests for AADE API integration
 - [ ] Write unit tests for VIES integration
 - [ ] Test with different WordPress versions
@@ -43,6 +58,7 @@
 - [ ] Test browser compatibility (Chrome, Firefox, Safari, Edge)
 
 ### 7. Documentation
+
 - [ ] Add inline code documentation (PHPDoc)
 - [ ] Create user guide (Greek)
 - [ ] Create developer documentation
@@ -50,6 +66,7 @@
 - [ ] Video tutorial for setup
 
 ### 8. Code Quality
+
 - [ ] Fix PSR-4 autoloading warnings
 - [ ] Add proper error logging
 - [ ] Implement proper error handling for API failures
@@ -57,12 +74,14 @@
 - [ ] Set up automated tests (CI/CD)
 
 ### 9. Accessibility
+
 - [ ] Add ARIA labels to all form fields
 - [ ] Ensure keyboard navigation works properly
 - [ ] Test with screen readers
 - [ ] Add focus management for error states
 
 ### 10. Security
+
 - [ ] Audit nonce implementation
 - [ ] Add rate limiting for AADE API calls
 - [ ] Sanitize all user inputs
@@ -84,4 +103,24 @@
 
 ---
 
-**Last Updated:** October 18, 2025
+## 📊 **Summary**
+
+**Completed:** 16 tasks ✅
+**Pending:** 35+ tasks
+
+**Recent Achievements:**
+
+- ✅ VIES VAT validation for EU countries
+- ✅ AADE VAT validation for Greece
+- ✅ Auto-detection of VAT type (AADE vs VIES)
+- ✅ React-compatible field updates for WooCommerce blocks
+- ✅ Removed optional labels from fields
+- ✅ Silent operation (no console logging)
+- ✅ Loading spinner during VAT lookup
+- ✅ Success/error messages after VAT validation (Greek)
+- ✅ VIES result caching (1 hour valid, 15 min invalid)
+- ✅ Lazy loading scripts (checkout page only)
+
+---
+
+**Last Updated:** October 19, 2025

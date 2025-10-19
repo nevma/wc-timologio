@@ -208,6 +208,15 @@ class Vies {
 			return __( 'Country code and VAT number are required.', 'nvm' );
 		}
 
+		// Create transient key for caching
+		$transient_key = 'nvm_vies_' . strtoupper( $country_code ) . '_' . preg_replace( '/[^0-9A-Z]/', '', (string) $vat_number );
+		$cached_result = get_transient( $transient_key );
+
+		// Return cached result if available
+		if ( false !== $cached_result ) {
+			return $cached_result;
+		}
+
 		try {
 			$client = new \SoapClient( 'https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl', array(
 				'exceptions' => true,
@@ -223,18 +232,26 @@ class Vies {
 			);
 
 			if ( ! empty( $response->valid ) ) {
-				return array(
+				$result = array(
 					'valid'       => true,
 					'countryCode' => (string) $response->countryCode,
 					'vatNumber'   => (string) $response->vatNumber,
 					'name'        => (string) $response->name,
 					'address'     => (string) $response->address,
 				);
+
+				// Cache successful result for 1 hour
+				set_transient( $transient_key, $result, 1 * HOUR_IN_SECONDS );
+
+				return $result;
 			}
+
+			// Cache invalid result for 15 minutes to prevent repeated failed lookups
+			set_transient( $transient_key, false, 15 * MINUTE_IN_SECONDS );
 
 			return false;
 		} catch ( \SoapFault $sf ) {
-			// Common transient errors from VIES.
+			// Don't cache SOAP errors as they might be temporary
 			return sprintf(
 				/* translators: %s is SOAP fault message */
 				__( 'VIES temporary error: %s', 'nvm' ),

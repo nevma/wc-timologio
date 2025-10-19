@@ -49,3 +49,71 @@
 .wc-block-components-text-input:has([data-nvm*="nvm-last-row"]) {
 	margin-left: 0.5rem;
 }
+
+/* Loading spinner for VAT lookup */
+.nvm-vat-loading {
+	position: relative;
+}
+
+.nvm-vat-loading::after {
+	content: '';
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 20px;
+	height: 20px;
+	border: 2px solid #f3f3f3;
+	border-top: 2px solid #3498db;
+	border-radius: 50%;
+	animation: nvm-spin 0.8s linear infinite;
+}
+
+@keyframes nvm-spin {
+	0% { transform: translateY(-50%) rotate(0deg); }
+	100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Success/Error messages for VAT lookup */
+.nvm-vat-message {
+	margin-top: 0.5rem;
+	padding: 0.75rem 1rem;
+	border-radius: 4px;
+	font-size: 0.875rem;
+	line-height: 1.4;
+	animation: nvm-slide-in 0.3s ease-out;
+}
+
+.nvm-vat-message.success {
+	background-color: #d4edda;
+	border: 1px solid #c3e6cb;
+	color: #155724;
+}
+
+.nvm-vat-message.error {
+	background-color: #f8d7da;
+	border: 1px solid #f5c6cb;
+	color: #721c24;
+}
+
+.nvm-vat-message.fade-out {
+	animation: nvm-fade-out 0.5s ease-out forwards;
+}
+
+@keyframes nvm-slide-in {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes nvm-fade-out {
+	to {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+}
