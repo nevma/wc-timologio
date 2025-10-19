@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Set namespace.
  */
@@ -13,6 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * Manages plugin settings and WooCommerce integration.
+ *
+ * This class adds a custom settings tab to WooCommerce where administrators
+ * can configure AADE credentials and enable/disable automatic VAT validation.
  *
  * @package Nvm\Timologio
  * @since 1.0.0
@@ -41,7 +45,7 @@ class Settings {
 	 * Add a custom settings tab to WooCommerce settings.
 	 *
 	 * @param array $tabs Array of existing WooCommerce setting tabs.
-	 * @return array
+	 * @return array Modified array of WooCommerce setting tabs.
 	 */
 	public function add_settings_tab( $tabs ) {
 		$tabs['timologio'] = __( 'Nevma Settings', 'nevma' );
@@ -108,7 +112,7 @@ class Settings {
 	private function get_settings() {
 		return array(
 			array(
-				'title' => __( 'Timologio Settings', 'nevma' ),
+				'title' => __( 'Timologio Settings - Aade', 'nevma' ),
 				'type'  => 'title',
 				'id'    => 'timologio_settings',
 			),
@@ -121,33 +125,33 @@ class Settings {
 				'type'    => 'select',
 				'default' => 'vies',
 				'options' => array(
+					'none' => __( 'None', 'nevma' ),
 					'vies' => __( 'VIES (EU VAT)', 'nevma' ),
-					'aade' => __( 'AADE (Greece)', 'nevma' ),
+					'timologio_enable_feature' => __( 'AADE (Greece)', 'nevma' ),
 				),
 			),
 
-			// --- AADE-only fields (hidden unless source === 'aade') ---
-
 			array(
-				// An extra "title" row makes the group clearer; we toggle it as well.
-				'title' => __( 'AADE Settings', 'nevma' ),
-				'type'  => 'title',
-				'id'    => 'timologio_aade_title',
-			),
-
-			array(
-				'title'   => __( 'AADE Username', 'nevma' ),
-				'desc'    => __( 'Enter your AADE username.', 'nevma' ),
-				'id'      => 'timologio_aade_user',
+				'title'   => __( '', 'nevma' ),
+				'desc'    => __( 'Please enter the username', 'nevma' ),
+				'id'      => 'timologio_vies_user',
 				'type'    => 'text',
 				'default' => '',
 			),
 
+			// --- AADE-only fields (hidden unless source === 'aade') ---
 			array(
-				'title'   => __( 'AADE Password', 'nevma' ),
-				'desc'    => __( 'Enter your AADE password.', 'nevma' ),
+				'title'   => __( 'Username Aade', 'nevma' ),
+				'desc'    => __( 'Please enter the username', 'nevma' ),
+				'id'      => 'timologio_aade_user',
+				'type'    => 'text',
+				'default' => '',
+			),
+			array(
+				'title'   => __( 'Password Aade', 'nevma' ),
+				'desc'    => __( 'Please enter the password', 'nevma' ),
 				'id'      => 'timologio_aade_pass',
-				'type'    => 'password',
+				'type'    => 'text',
 				'default' => '',
 			),
 

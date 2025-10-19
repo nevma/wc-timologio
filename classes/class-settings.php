@@ -123,13 +123,15 @@ class Settings {
 				'desc'    => __( 'Choose where to fetch company info from.', 'nevma' ),
 				'id'      => 'timologio_source',
 				'type'    => 'select',
-				'default' => 'vies',
+				'default' => 'none',
 				'options' => array(
 					'none' => __( 'None', 'nevma' ),
 					'vies' => __( 'VIES (EU VAT)', 'nevma' ),
 					'timologio_enable_feature' => __( 'AADE (Greece)', 'nevma' ),
 				),
 			),
+
+			// --- VIES-only fields (hidden unless source === 'aade') ---
 
 			array(
 				'title'   => __( '', 'nevma' ),
