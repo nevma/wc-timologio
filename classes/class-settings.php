@@ -70,7 +70,6 @@ class Settings {
 
 					// Field row IDs come from option 'id' values.
 					var $aadeRows = $(
-						'#timologio_aade_title,' +
 						'#timologio_aade_user,' +
 						'#timologio_aade_pass'
 					);
