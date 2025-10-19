@@ -18,6 +18,57 @@
 		});
 	}
 
+	// Detect VAT type: AADE (Greek) or VIES (EU)
+	function detectVatType(vat) {
+		const cleaned = vat.trim().toUpperCase();
+
+		// Greek VAT patterns
+		// 1. Pure 9 digits: 106550454
+		// 2. EL + 9 digits: EL106550454
+		// 3. GR + 9 digits: GR106550454
+		const greekPatterns = [
+			/^(\d{9})$/,           // 9 digits
+			/^EL(\d{9})$/,         // EL + 9 digits
+			/^GR(\d{9})$/          // GR + 9 digits
+		];
+
+		for (const pattern of greekPatterns) {
+			if (pattern.test(cleaned)) {
+				return {
+					isValid: true,
+					type: 'aade',
+					country: 'GR',
+					cleanVat: cleaned.replace(/^(EL|GR)/, '') // Remove prefix
+				};
+			}
+		}
+
+		// EU VAT pattern: 2-letter country code + alphanumeric
+		const euPattern = /^([A-Z]{2})([A-Z0-9]{2,12})$/;
+		const euMatch = cleaned.match(euPattern);
+
+		if (euMatch) {
+			const country = euMatch[1];
+			// Exclude Greek codes from VIES
+			if (country !== 'EL' && country !== 'GR') {
+				return {
+					isValid: true,
+					type: 'vies',
+					country: country,
+					cleanVat: cleaned
+				};
+			}
+		}
+
+		// Invalid format
+		return {
+			isValid: false,
+			type: null,
+			country: null,
+			cleanVat: cleaned
+		};
+	}
+
 	// Wait for DOM to be ready
 	function initVatLookup() {
 		const vatInput = document.getElementById('contact-nvm-billing_vat');
@@ -32,14 +83,16 @@
 
 		vatInput.addEventListener('focusout', function () {
 			const vatValue = this.value;
-			const numericVat = vatValue.replace(/\D/g, '');
 
-			// Only proceed if VAT has at least 8 digits
-			if (numericVat.length < 8) {
+			// Detect VAT type
+			const vatInfo = detectVatType(vatValue);
+
+			if (!vatInfo.isValid) {
+				console.warn('NVM VAT Lookup: Invalid VAT format:', vatValue);
 				return;
 			}
 
-			console.log('NVM VAT Lookup: Fetching details for VAT:', vatValue);
+			console.log('NVM VAT Lookup: Detected', vatInfo.type.toUpperCase(), 'VAT for', vatInfo.country, '- VAT:', vatValue);
 
 			// Get AJAX data
 			const ajaxUrl = typeof nvmCheckoutData !== 'undefined' ? nvmCheckoutData.ajax_url : '';
@@ -53,7 +106,9 @@
 			// Make AJAX request
 			const formData = new FormData();
 			formData.append('action', 'fetch_vat_details');
-			formData.append('vat_number', vatValue);
+			formData.append('vat_number', vatInfo.cleanVat);
+			formData.append('vat_type', vatInfo.type); // 'aade' or 'vies'
+			formData.append('country', vatInfo.country);
 			formData.append('security', ajaxNonce);
 
 			fetch(ajaxUrl, {

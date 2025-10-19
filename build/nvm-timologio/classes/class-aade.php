@@ -138,9 +138,39 @@ class Aade {
 
 		check_ajax_referer( 'nvm_secure_nonce', 'security' );
 
-		if ( isset( $_POST['vat_number'] ) ) {
-			$vat_number  = sanitize_text_field( $_POST['vat_number'] );
-			$vat_number  = str_replace( 'EL', '', $vat_number );
+		if ( ! isset( $_POST['vat_number'] ) ) {
+			wp_send_json_error( 'VAT number not provided.' );
+			wp_die();
+		}
+
+		$vat_number = sanitize_text_field( $_POST['vat_number'] );
+		$vat_type   = isset( $_POST['vat_type'] ) ? sanitize_text_field( $_POST['vat_type'] ) : 'aade';
+		$country    = isset( $_POST['country'] ) ? sanitize_text_field( $_POST['country'] ) : 'GR';
+
+		// Route to AADE or VIES based on VAT type
+		if ( $vat_type === 'vies' ) {
+			// EU VAT validation via VIES
+			$vies     = new Vies();
+			$response = $vies->nvm_get_vat_details_vies( $vat_number, $country );
+
+			if ( is_array( $response ) && $response['valid'] ) {
+				wp_send_json_success(
+					array(
+						'doy'           => '', // VIES doesn't provide Greek tax office
+						'epwnymia'      => $response['name'] ?? '',
+						'drastiriotita' => '', // VIES doesn't provide business activity
+						'address'       => $response['address'] ?? '',
+						'country'       => $country,
+						'city'          => '', // Parse from address if needed
+						'postcode'      => '', // Parse from address if needed
+					)
+				);
+			} else {
+				wp_send_json_error( is_string( $response ) ? $response : 'VAT number not valid.' );
+			}
+		} else {
+			// Greek VAT validation via AADE
+			$vat_number  = str_replace( array( 'EL', 'GR' ), '', $vat_number );
 			$xmlResponse = $this->check_for_valid_vat_aade( $vat_number );
 
 			$flag = $this->get_aade_element( $xmlResponse, 'deactivation_flag' );
@@ -161,8 +191,6 @@ class Aade {
 			} else {
 				wp_send_json_error( 'VAT number not valid.' );
 			}
-		} else {
-			wp_send_json_error( 'VAT number not provided.' );
 		}
 
 		wp_die();

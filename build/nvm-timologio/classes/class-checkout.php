@@ -434,7 +434,6 @@ class Checkout {
 				'optionalLabel' => __( 'ΑΦΜ', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-first-row timologio',
-					'class'               => 'nvm-vat-field',
 				),
 				'show_in_order' => true,
 			)
@@ -449,7 +448,6 @@ class Checkout {
 				'optionalLabel' => __( 'ΔΟΥ', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'nvm-last-row timologio',
-					'class'               => 'nvm-irs-field',
 				),
 				'show_in_order' => true,
 			)
@@ -464,7 +462,6 @@ class Checkout {
 				'optionalLabel' =>  __( 'Επωνυμία εταιρίας', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'timologio',
-					'class'               => 'nvm-company-field',
 				),
 				'show_in_order' => true,
 			)
@@ -479,7 +476,6 @@ class Checkout {
 				'optionalLabel' => __( 'Δραστηριότητα', 'nevma' ),
 				'attributes'    => array(
 					'data-nvm'            => 'timologio',
-					'class'               => 'nvm-activity-field',
 				),
 				'show_in_order' => true,
 			)

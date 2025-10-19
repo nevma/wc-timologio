@@ -126,7 +126,7 @@ class Settings {
 				'options' => array(
 					'none' => __( 'None', 'nevma' ),
 					'vies' => __( 'VIES (EU VAT)', 'nevma' ),
-					'timologio_enable_feature' => __( 'AADE (Greece)', 'nevma' ),
+					'aade' => __( 'AADE (Greece)', 'nevma' ),
 				),
 			),
 
@@ -158,7 +158,7 @@ class Settings {
 
 			array(
 				'type' => 'sectionend',
-				'id'   => 'timologio_settings',
+				'id'   => 'nvm_timologio_settings',
 			),
 		);
 	}
